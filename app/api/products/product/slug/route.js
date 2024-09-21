@@ -1,11 +1,9 @@
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
 
-
-
 export async function GET(request, { params: { slug } }) {
   try {
-    // Fetch category with related products
+    // Fetch product by slug
     const product = await db.product.findUnique({
       where: { slug }
     });
@@ -27,14 +25,11 @@ export async function GET(request, { params: { slug } }) {
   }
 }
 
-
-
-
-export async function DELETE(request, { params: { id } }) {
+export async function DELETE(request, { params: { slug } }) {
   try {
     const existingProduct = await db.product.findUnique({
       where: {
-        id,
+        slug,
       },
     });
     if (!existingProduct) {
@@ -43,55 +38,51 @@ export async function DELETE(request, { params: { id } }) {
           data: null,
           message: "Product Not Found",
         },
-        { status: 400 }
+        { status: 404 }
       );
     }
     const deleteProduct = await db.product.delete({
       where: {
-        id,
+        slug,
       },
     });
 
     return NextResponse.json(deleteProduct);
   } catch (error) {
-    console.log(error);
+    console.error('Error deleting Product:', error);
     return NextResponse.json(
       {
         message: "Unable to Delete Product",
-        error,
+        error: error.message || 'Unknown error',
       },
       { status: 500 }
     );
   }
 }
-export async function PUT(request, { params: { id } }) {
-  console.log('PUT request received with ID:', id);
+
+export async function PUT(request, { params: { slug } }) {
   try {
-    const { name, productprice , image, isActive } = await request.json();
-    console.log('Data received:', { name, productprice , image, isActive });
+    const { name, productprice, image, isActive } = await request.json();
 
     const existingProduct = await db.product.findUnique({
-      where: { id },
+      where: { slug },
     });
 
     if (!existingProduct) {
-      console.log('Product not found');
       return NextResponse.json({ data: null, message: "Product Not Found" }, { status: 404 });
     }
 
-
     const updatedProduct = await db.product.update({
-      where: { id },
-      data: { name, productprice , image, isActive },
+      where: { slug },
+      data: { name, productprice, image, isActive },
     });
 
-    console.log('Product updated:', updatedProduct);
     return NextResponse.json(updatedProduct);
   } catch (error) {
     console.error('Error updating Product:', error);
-    return NextResponse.json({ message: "Unable to Update Product", error }, { status: 500 });
+    return NextResponse.json({ 
+      message: "Unable to Update Product", 
+      error: error.message || 'Unknown error' 
+    }, { status: 500 });
   }
 }
-
-
-
