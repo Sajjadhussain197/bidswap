@@ -8,33 +8,34 @@ import { UploadButton } from "../../../lib/uploadThing";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { makePostRequest } from "@/lib/apiRequest";
-import useRouter from 'next/router';
+import { useRouter } from 'next/router';
 import Update from "../formInputs/Update";
 import { useSession } from "next-auth/react";
 
 
 export default function CouponPart({ heading, href, linktitle }) {
-  const {data:session,status}  =useSession()
-  if(!status === " Loading"){
-    return 
-    <p> Loading ...</p>
-  }
-  const vendorId  = session?.user?.id;
- // const expiryNormalDate = convertIsoDateToNormal(UpdateData.expiryDate);
+  const {data:session, status} = useSession();
   const [isOpen, setIsOpen] = useState(false);
-  const { reset,register, handleSubmit, formState: { errors } } = useForm();
-  const router = useRouter;
+  const { reset, register, handleSubmit, formState: { errors } } = useForm();
+  const router = useRouter();
+  
+  if (status === "loading") {
+    return <p>Loading ...</p>;
+  }
+
+  const vendorId = session?.user?.id;
+  // const expiryNormalDate = convertIsoDateToNormal(UpdateData.expiryDate);
+
   function redirect() {
     router.push('dashboard/coupons');
   }
 
-
   async function onSubmit(data) {
-    data.vendorId =vendorId;
+    data.vendorId = vendorId;
     const slug = generateSlug(data.name);
     data.slug = slug;
     console.log(data);
-    makePostRequest('api/coupons',data,'coupon',reset, redirect);
+    makePostRequest('api/coupons', data, 'coupon', reset, redirect);
   }
 
   return (
