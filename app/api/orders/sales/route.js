@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import db from "../../../lib/db";
+// import db from "../../../lib/db";
 import { Prisma } from "@prisma/client";
 import { title } from "process";
 import CartItem from "@/app/components/frontend/CartItem";
+import db from "@/lib/db";
 
 
 export async function GET(request) {
