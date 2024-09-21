@@ -1,12 +1,13 @@
 "use Client";
 import Image from "next/image";
 // import React, { useRef } from "react";
-import logo from "../../public/limiLogo.webp";
+// import logo from "../../public/limiLogo.webp";
 import { useReactToPrint } from "react-to-print";
 //import { convertIsoDateToNormal } from "@/lib/convertIsoDateToNormal";
 export default function SalesInvoice({order}) {
    // const invoiceDate =convertIsoDateToNormal(order.createdAt);
     console.log(cartItems);
+    let logo = "/limilogo.png"
   const subTotal =order.orderItems.reduce((acc,currentItem)=>{
    return acc + (currentItem.saleprice * currentItem.quantity)
   },0) ?? 0 
