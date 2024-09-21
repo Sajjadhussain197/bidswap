@@ -7,5 +7,6 @@ export default async function Page({ params: { id } }) {
   
   return (
     <SalesInvoice order={order} />
+    
   );
 }
