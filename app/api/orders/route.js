@@ -51,9 +51,9 @@ export async function POST(request) {
           orderItems: {
             create: orderItems.map(item => ({
               productId: item.id,
-              qty: item.qty,
+              quantity: item.qty,
               image: item.image || 'default-image',
-              vendorId: item.id, // Adjust this as needed
+              vendorId: item.userId || userId, // Use item.userId if available, otherwise fallback to order's userId
               name: item.name || 'default-name',
               price: item.saleprice,
             })),
@@ -68,10 +68,10 @@ export async function POST(request) {
             data: {
               orderId: newOrder.id,
               productId: item.id,
-              vendorId: item.id || newOrder.id, // Adjust this as needed
-              image: item.image || 'default-image',
+              vendorId: item.userId || userId, // Use item.userId if available, otherwise fallback to order's userId
               name: item.name || 'default-name',
-              quantity: item.qty,
+              image: item.image || 'default-image',
+              qty: item.qty,
               productprice: item.saleprice,
               total: item.qty * item.saleprice,
             },
@@ -94,7 +94,7 @@ export async function POST(request) {
     return NextResponse.json(
       {
         message: "Failed to create Order",
-        error,
+        error: error.message,
       },
       { status: 500 }
     );

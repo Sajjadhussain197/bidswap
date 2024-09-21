@@ -38,6 +38,8 @@ export default function OrderSummaryForm() {
       orderItems: cartItems.map(item => ({
         id: item.id,
         qty: item.qty,
+        image:item.image,
+        name:item.name,
         saleprice: item.saleprice
       })),
       checkoutFormData,
@@ -59,11 +61,17 @@ export default function OrderSummaryForm() {
 
       if (response.ok) {
         const responseData = await response.json(); // Parse the JSON response
+        console.log(responseData,"data from responsedata")
         setLoading(false);
         toast.success("Order Created Successfully");
 
         // Redirect to the order confirmation page with the new order's ID
-        router.push(`/order-confirmation/${responseData.id}`);
+        if (responseData && responseData.newOrder && responseData.newOrder.id) {
+          router.push(`/order-confirmation/${responseData.newOrder.id}`);
+        } else {
+          console.error('Invalid response data:', responseData);
+          toast.error('Error processing order. Please try again.');
+        }
       } else {
         setLoading(false);
         toast.error("Something went wrong, please try again");

@@ -1,21 +1,54 @@
+"use client";
+
 import { getData } from "@/lib/getData";
 import { CheckCircle2 } from "lucide-react";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
-export default async function Page({ params: { id } }) {
-  const order = await getData(`orders/${id}`);
-  console.log(order);
+export default function Page() {
+  const { id } = useParams();
+  const [order, setOrder] = useState(null);
+  const [orderItems, setOrderItems] = useState([]);
+  const [subTotal, setSubTotal] = useState(0);
+  const [total, setTotal] = useState(0)
+
+  useEffect(() => {
+    async function fetchOrder() {
+      if (id) {
+        try {
+          const fetchedOrder = await getData(`orders/${id}`);
+          if (fetchedOrder) {
+            setOrder(fetchedOrder);
+            console.log(fetchedOrder, "data from fetchorder using orders/id");
+            
+              const items = Array.isArray(fetchedOrder.orderItems) ? fetchedOrder.orderItems : [];
+              setOrderItems(items);
+              
+              const subtotal = items
+                .reduce((acc, item) => acc + item.price * item.quantity, 0);
+              setSubTotal(subtotal.toFixed(2));
+              const totalprice = (subtotal + fetchedOrder.shippingCost).toFixed(2);
+              console.log(totalprice);
+              setTotal(totalprice)
+
+            
+          } else {
+            console.error("No order data received");
+          }
+        } catch (error) {
+          console.error("Error fetching order:", error);
+        }
+        
+      }
+    }
+
+    fetchOrder();
+  }, [id]);
 
   if (!order) {
-    return <div>Order not found</div>;
+    return <div>Loading...</div>;
   }
-
-  const orderItems = Array.isArray(order?.orderItems) ? order.orderItems : [];
-  const subTotal = orderItems
-    .reduce((acc, item) => acc + item.saleprice * item.quantity, 0)
-    .toFixed(2);
-    console.log(orderItems);
 
   return (
     <section className="py-12 dark:bg-slate-950 bg-slate-50 sm:py-16 lg:py-20">
@@ -84,9 +117,9 @@ export default async function Page({ params: { id } }) {
                           >
                             <div className="flex items-stretch">
                               <div className="flex-shrink-0">
-                                <Image
-                                  width={200}
-                                  height={200}
+                                <img
+                                  // width={200}
+                                  // height={200}
                                   className="object-cover w-20 h-20 rounded-lg"
                                   src={item.image}
                                   alt={item.name}
@@ -102,7 +135,7 @@ export default async function Page({ params: { id } }) {
 
                             <div className="ml-auto">
                               <p className="text-sm font-bold text-right text-gray-900 dark:text-gray-300">
-                                ${item.saleprice}
+                                ${item.price}
                               </p>
                             </div>
                           </li>
@@ -121,13 +154,21 @@ export default async function Page({ params: { id } }) {
                         ${subTotal}
                       </p>
                     </li>
+                    <li className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                        Shipping Cost
+                      </p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                        ${order.shippingCost}
+                      </p>
+                    </li>
 
                     <li className="flex items-center justify-between">
                       <p className="text-base font-medium text-gray-900 dark:text-white">
                         Total
                       </p>
                       <p className="text-base font-bold text-gray-900 dark:text-white">
-                        ${subTotal}
+                        ${total}
                       </p>
                     </li>
                   </ul>
