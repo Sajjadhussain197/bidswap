@@ -19,7 +19,7 @@ export default function Product({product}) {
         toast.success("Item added Successfully");
 
     }
-    console.log(product, "Product")
+    // console.log(product, "Product")
   return (
     <div className="rounded-lg mr-3 bg-white dark:bg-slate-900 
     overflow-hidden border shadow" >
