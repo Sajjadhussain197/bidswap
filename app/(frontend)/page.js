@@ -15,10 +15,20 @@ export default async function Home({ searchParams }) {
   if (categoryId) {
     const categoryData = await getData(`categories/${categoryId}`);
     categories = categoryData ? [categoryData] : [];
+    console.log(categories)
   } else {
     categories = await getData("categories");
+    console.log(categories)
   }
 
+  const query = searchParams.query || '';
+  console.log(query)
+  if (query) {
+    const slug = encodeURIComponent(query.trim()); // Convert the query to a slug-safe format
+    const categoryData = await getData(`categories/${slug}`);
+    categories = categoryData ? categoryData : [];
+    console.log(categories, "search datas")
+  }
   const session = await getServerSession(authOptions);
   console.log(session?.user);
 

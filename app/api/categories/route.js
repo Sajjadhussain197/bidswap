@@ -12,7 +12,6 @@ export async function POST(request) {
         slug,
         products // Array of product data to create
       } = await request.json();
-  
       // Create the category with associated products
       const newCategory = await db.category.create({
         data: {
@@ -42,6 +41,8 @@ export async function POST(request) {
   }
 
 export async function GET(request) {
+  
+  console.log("in main route")
     try {
      const category = await db.category.findMany({
       include:{

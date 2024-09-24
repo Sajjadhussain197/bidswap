@@ -1,8 +1,26 @@
 import { NextResponse } from 'next/server';
 import db from '../../../lib/db';
+import { getSession } from 'next-auth/react';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/authOptions';
 
 export async function POST(request) {
+  const session = await getServerSession(authOptions);
+  console.log(session, "backend session")
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+    // Check if the user is authenticated
+    if (!session || !session.user) {
+      return NextResponse.json(
+        { message: 'User not authenticated' },
+        { status: 401 }
+      );
+    }
+    const userId = session.user.id; // Assuming session.user.id contains the seller's ID
+    console.log(userId, "seller id");
   try {
+
     const {
       name,
       productprice,
@@ -20,9 +38,10 @@ export async function POST(request) {
       wholesaleQty,
       productStock,
       qty,
-      categoryId
+      categoryId,
+      userId  // Add sellerId to the destructured request body
     } = await request.json();
-
+    console.log(userId, "seller id")
     // Ensure numerical values are correctly parsed
     const parsedWholesaleQty = wholesaleQty ? parseInt(wholesaleQty, 10) : null;
     const parsedWholesalePrice = wholesalePrice ? parseFloat(wholesalePrice) : null;
@@ -41,7 +60,7 @@ export async function POST(request) {
       );
     }
 
-    // Create the product and link it to the category
+    // Create the product and link it to the category and seller
     const newProduct = await db.product.create({
       data: {
         name,
@@ -50,7 +69,6 @@ export async function POST(request) {
         description,
         isActive,
         image,
-        seller,
         isWholesale,
         sku,
         barcode,
@@ -61,8 +79,10 @@ export async function POST(request) {
         productStock: parsedProductStock,
         qty: parsedQty,
         category: {
-          connect: { id: categoryId } // Link product to category
-        }
+          connect: { id: categoryId }
+        },seller: {
+      connect: { id: userId } // Connect the seller (User) by its ID
+    }
       }
     });
 
@@ -81,7 +101,9 @@ export async function POST(request) {
 
 export async function GET() {
   try {
+    console.log("Fetching products from product route GET");
     const products = await db.product.findMany();
+    
     return NextResponse.json(products);
 
   } catch (error) {

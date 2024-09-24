@@ -26,9 +26,6 @@ export default function SearchForm() {
 
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
-    if (e.target.value === '') {
-      router.push('/');
-    }
   };
 
   return (

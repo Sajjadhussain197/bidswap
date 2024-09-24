@@ -11,10 +11,14 @@ import { makePostRequest } from "@/lib/apiRequest";
 import ImageInput from "../formInputs/ImageInput";
 import { storage } from "../../firebaseConfig";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { useSession } from "next-auth/react";
+
 
 
 export default function ProductPart({ heading, href, linktitle }) {
   const [isWholesale, setIsWholesale] = useState(false);
+  
+  const { data: session } = useSession();
 
   const handleWholesaleChange = (e) => {
     setIsWholesale(e.target.checked);
@@ -71,7 +75,7 @@ export default function ProductPart({ heading, href, linktitle }) {
       toast.error("Please select an image to upload.");
     }
   };
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     if (!url) {
       toast.error("Please upload an image before submitting.");
       return;
@@ -81,17 +85,25 @@ export default function ProductPart({ heading, href, linktitle }) {
     data.slug = slug;
     data.image = url;
 
-    makePostRequest('api/products', data, 'Product', reset)
-      .then(() => {
+    try {
+      if (!session || !session.user) {
+        toast.error("User not authenticated");
+        return;
+      }
+
+      data.userId = session.user.id;
+
+      const res = await  makePostRequest('api/products', data, 'Product', reset);
+      if(res){
         toast.success("New Product Added");
         reset();
-        setUrl(""); // Reset the image URL
-      })
-      .catch(error => {
-        console.error("Error adding product:", error);
-        toast.error("Error adding product. Please try again.");
-      });
+      setUrl(""); // Reset the image URL
+      }
+    } catch (error) {
+      console.error("Error adding product:", error);
+      toast.error("Error adding product. Please try again.");
     }
+  }
 
   return (
     <div>

@@ -1,48 +1,35 @@
-import db from "@/lib/db";import { NextResponse } from 'next/server'; // Ensure you import NextResponse
+import db from "@/lib/db";
+import { NextResponse } from "next/server";
 
-export async function GET(request, { params }) {
-  const identifier = params.id; // This could be either an ID or a slug
-  let category;
 
+
+export async function GET(request, { params: { id } }) {
   try {
-    // Check if the identifier is in ObjectID format (or whatever format your IDs are)
-    if (isValidObjectId(identifier)) {
-      // If it's a valid ID, search by ID
-      category = await db.category.findUnique({
-        where: { id: identifier },
-        include: { products: true }
-      });
-    } else {
-      // If it's not an ID, search by name, description, or slug
-      category = await db.category.findMany({
-        where: {
-          OR: [
-            { name: { contains: identifier, mode: 'insensitive' } },
-            { description: { contains: identifier, mode: 'insensitive' } },
-            { slug: { contains: identifier, mode: 'insensitive' } },
-          ],
-        },
-        include: { products: true }
-      });
+    // Fetch category with related products
+
+    const category = await db.category.findUnique({
+      where: { id },
+      include: { products: true } // Include associated products
+    });
+    
+    if (!category) {
+      return NextResponse.json(
+        { message: 'Category not found' },
+        { status: 404 }
+      );
     }
 
-    // Check if category is found
-    if (!category || (Array.isArray(category) && category.length === 0)) {
-      return NextResponse.json({ message: 'Category not found' }, { status: 404 });
-    }
-
-    // Return category data in JSON format
     return NextResponse.json(category);
   } catch (error) {
-    console.error("Error fetching category:", error);
-    return NextResponse.json({ message: 'Unable to fetch category' }, { status: 500 });
+    console.error('Error Fetching category:', error);
+    return NextResponse.json({
+      message: 'Unable to fetch category',
+      error: error.message || 'Unknown error'
+    }, { status: 500 });
   }
 }
 
-// Helper function to validate ObjectID format (if using MongoDB)
-function isValidObjectId(id) {
-  return /^[0-9a-fA-F]{24}$/.test(id); // Example for MongoDB ObjectID
-}
+
 
 
 export async function DELETE(request, { params: { id } }) {
@@ -108,3 +95,6 @@ export async function PUT(request, { params: { id } }) {
     return NextResponse.json({ message: "Unable to Update Category", error }, { status: 500 });
   }
 }
+
+
+

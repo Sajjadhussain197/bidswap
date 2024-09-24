@@ -3,40 +3,60 @@ import React, { useState } from 'react';
 import TextInput from '../../formInputs/TextInput';
 import { useForm } from 'react-hook-form';
 import ToggleInput from '../../formInputs/ToggleInput';
+import axios from 'axios';
 import NavButtons from './NavButtons';
 import { Circle, CreditCard, HeartHandshake } from 'lucide-react'; // Corrected `Creditcard` to `CreditCard`
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentStep, updatecheckoutFormData } from '@/redux/slices/checkoutSlice';
+import { checkout } from '@/app/api/webhook/checkout';
 
 export default function ShippingDetailsForm() {
   const dispatch = useDispatch();
-  const currentStep = useSelector((store)=> store.checkout.currentStep)
+  const currentStep = useSelector((store) => store.checkout.currentStep)
   const exitingformData = useSelector((store) => store.checkout.checkoutFormData);
-    const {
-      register,
-      watch,
-      handleSubmit,
-      reset,
-      formState: { errors },
-    } = useForm(
-      {
-        defaultValues: {
-          ...exitingformData,
-        },
-      });
-      const initialPaymentMethod = exitingformData?.initialPaymentMethod||"";
-      const[PaymentMethod, setPaymentMethod]=useState(initialPaymentMethod);
-  console.log(PaymentMethod);
+  const {
+    register,
+    watch,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm(
+    {
+      defaultValues: {
+        ...exitingformData,
+      },
+    });
+
+  const initialPaymentMethod = exitingformData?.initialPaymentMethod || "";
+  const [PaymentMethod, setPaymentMethod] = useState(initialPaymentMethod);
+  console.log(exitingformData);
 
   async function processData(data) {
     data.PaymentMethod = PaymentMethod;
     console.log(data);
-        // update the checkout data
-        dispatch(updatecheckoutFormData(data));
-        // update the current steps
-        dispatch(setCurrentStep(currentStep + 1));
+    // update the checkout data
+    dispatch(updatecheckoutFormData(data));
+    // update the current steps
+    dispatch(setCurrentStep(currentStep + 1));
   } // Missing closing brace was added here
+  const payWithCreditCard = async () => {
+    console.log("Pay with Credit Card");
+    console.log(exitingformData);
+    try {
+      const { data: { url } } = await axios.post("/api/payment", {
+        name: exitingformData.selectedProduct?.title || '',
+        price: exitingformData.selectedProduct?.price || 0
+      })
+      // console.log({ data });
+      window.location.href = url;
+      redirect(url);
 
+    } catch (error) {
+      console.log(error.message);
+
+    }
+
+  }
   return (
     <form onSubmit={handleSubmit(processData)}>
       <h2 className='text-xl font-semibold mb-4 dark:text-lime-400'>
@@ -92,8 +112,29 @@ export default function ShippingDetailsForm() {
                 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
               >
                 <div className="flex gap-2 items-center">
-                  <CreditCard className="w-8 h-8 ms-3 flex-shrink-0" />
-                  <p>Credit Card</p>
+                  <CreditCard className="w-8 h-8 ms-3 flex-shrink-0 text-green-400" />
+                  <div onClick={async () => {
+                    console.log("Pay with Credit Card data is here", exitingformData);
+                    try {
+                      const { data: { url } } = await axios.post("/api/payment", {
+                        firstName: exitingformData.FirstName,
+                        lastName: exitingformData.LastName,
+                        email: exitingformData.Email,
+                        phone: exitingformData.Phone,
+                        userId: exitingformData.userId,
+                        price: exitingformData.totalPrice 
+                      })
+                      // console.log({ data });
+                      window.location.href = url;
+                      redirect(url);
+
+                    } catch (error) {
+                      console.log(error.message);
+
+                    }
+                  }}>
+                    Pay with Credit Card
+                  </div>
                 </div>
                 <Circle className="w-5 h-5 ms-3" />
               </label>
