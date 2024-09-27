@@ -13,7 +13,7 @@ import { LayoutDashboardIcon, LogOut, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
-import { generateInitials } from '@/lib/generateInitials';
+import generateInitials from '../../../lib/generateInitials';
 export default function UserAvatar({user={}}) {
   const role =user?.role
   const {name,image} = user;

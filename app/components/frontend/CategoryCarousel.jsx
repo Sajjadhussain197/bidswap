@@ -10,8 +10,9 @@ import dynamic from 'next/dynamic';
 
 // Import the Product component dynamically to avoid issues with server-side imports
 const Product = dynamic(() => import("./Product"), { ssr: false });
-
+console.log()
 export default function CategoryCarousel({ products }) {
+  console.log(products,"products end")
   const responsive = {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
@@ -48,7 +49,7 @@ export default function CategoryCarousel({ products }) {
       dotListClass="custom-dot-list-style"
       itemClass="px-4"
     >
-      {products.map((product, i) => (
+      { products.map((product, i) => (
         <Product product={product} key={i} />
       ))}
     </Carousel>

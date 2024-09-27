@@ -18,7 +18,7 @@ export async function checkout({ lineItems }) {
         const { error } = await stripe.redirectToCheckout({
             mode: "payment",
             lineItems,
-            successUrl: `${window.location.origin}?session_id={CHECKOUT_SESSION_ID}`,
+            successUrl: `${window.location.origin}/checkout?step=4`,
             cancelUrl: window.location.origin
         });
 

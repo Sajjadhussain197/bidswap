@@ -20,33 +20,32 @@ model Post {
 }
 
 model User {
-  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
-  email              String     @unique
-  password           String
-  emailVerified      Boolean    @default(false)
-  name               String?
-  role               String
-  verificationToken  String?
-  profile            UserProfile?
-  address            Address?
-  posts              Post[]
-  products           Product[]  @relation("UserProducts")
-  Coupons            Coupon[]
-  Orders             Order[]
-  sales              Sale[]
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  id                String       @id @default(auto()) @map("_id") @db.ObjectId
+  email             String       @unique
+  password          String
+  emailVerified     Boolean      @default(false)
+  name              String?
+  role              UserRole
+  verificationToken String?
+  profile           UserProfile?
+  address           Address?
+  posts             Post[]
+  products          Product[]    @relation("UserProducts")
+  coupons           Coupon[]
+  orders            Order[]
+  sales             Sale[]
+  bids              Bid[]
+  barters           Barter[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
 }
-// Model for normal user profile
+
 model UserProfile {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @unique @db.ObjectId
-  // Add other fields for user onboarding information
-  // For example:
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @unique @db.ObjectId
   dateOfBirth DateTime?
-  address    String?
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address     String?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Comment {
@@ -70,24 +69,23 @@ model Coupon {
   name      String
   code      String
   date      DateTime
-  vendorId  String    @db.ObjectId
+  vendorId  String   @db.ObjectId
   slug      String
   isActive  Boolean
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  vendor    User   @relation(fields: [vendorId], references: [id], onDelete: Cascade, onUpdate:Cascade)
+  vendor    User     @relation(fields: [vendorId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model Category {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   description String
   image       String
   slug        String
-  products  Product[]  @relation("CategoryProducts")
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  products    Product[] @relation("CategoryProducts")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Banner {
@@ -166,6 +164,7 @@ enum UserRole {
   SELLER
   MODERATOR
 }
+
 enum OrderStatus {
   PENDING
   PROCESSING
@@ -175,54 +174,92 @@ enum OrderStatus {
 }
 
 model Product {
-  id                String    @id @default(auto()) @map("_id") @db.ObjectId
-  name              String    @unique
-  productprice      Float
-  saleprice         Float
-  description       String
-  isActive          Boolean
-  image             String
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  isWholesale       Boolean
-  sku               String?
-  barcode           String?
-  productCode       String?
-  unit              String?
-  wholesalePrice    Float?
-  wholesaleQty      Int?
-  productStock      Int?
-  qty               Int?
-  orderItems        OrderItems[]
-  sales             Sale[]
-  category          Category  @relation("CategoryProducts", fields: [categoryId], references: [id])
-  categoryId        String    @db.ObjectId
-  seller            User?      @relation("UserProducts", fields: [userId], references: [id])
-  userId            String?   @db.ObjectId
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  name           String       @unique
+  productprice   Float
+  saleprice      Float
+  description    String
+  isActive       Boolean
+  image          String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  isWholesale    Boolean
+  sku            String?
+  barcode        String?
+  productCode    String?
+  unit           String?
+  wholesalePrice Float?
+  wholesaleQty   Int?
+  productStock   Int?
+  qty            Int?
+  orderItems     OrderItems[] 
+  sales          Sale[] 
+  bids           Bid[]        @relation("ProductBids")
+  barters        Barter[]     @relation("ProductBarters")
+  category       Category     @relation("CategoryProducts", fields: [categoryId], references: [id])
+  categoryId     String       @db.ObjectId
+  seller         User?        @relation("UserProducts", fields: [userId], references: [id])
+  userId         String?      @db.ObjectId
+  serviceType    ServiceType? @relation(fields: [serviceTypeId], references: [id])
+  serviceTypeId  String?      @db.ObjectId  // This field references the ServiceType model
+}
 
+model ServiceType {
+  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  products Product[] // This establishes the relation back to Product
+}
+
+model Bid {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId String   @db.ObjectId
+  userId    String   @db.ObjectId
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  expiresAt DateTime
+  product   Product  @relation("ProductBids", fields: [productId], references: [id], onDelete: Cascade) // Specify relation name here
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Barter {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId String   @db.ObjectId
+  userId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation("ProductBarters", fields: [productId], references: [id], onDelete: Cascade) // Specify relation name here
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum ServiceTypeName {
+  BIDDING
+  BARTERING
+  SELLING
 }
 
 model Order {
-  id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId         String    @db.ObjectId
-  firstName      String 
-  lastName       String
-  emailAddress   String
-  phoneNumber    String
-  streetAddress  String
-  city           String
-  country        String
-  district       String
-  shippingCost   Float
-  paymentMethod  String
-  orderItems     OrderItems[]
-  orderStatus    OrderStatus @default(PROCESSING) 
-  sales          Sale[]
-  orderNumber  String?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  user           User      @relation(fields: [userId], references: [id])
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String       @db.ObjectId
+  firstName     String
+  lastName      String
+  emailAddress  String
+  phoneNumber   String
+  streetAddress String
+  city          String
+  country       String
+  district      String
+  shippingCost  Float
+  paymentMethod String
+  orderItems    OrderItems[]
+  orderStatus   OrderStatus  @default(PROCESSING)
+  sales         Sale[]
+  orderNumber   String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  user          User         @relation(fields: [userId], references: [id])
 }
+
 model OrderItems {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   orderId   String   @db.ObjectId
@@ -234,24 +271,24 @@ model OrderItems {
   price     Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  order   Order   @relation(fields: [orderId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
-}
-model Sale {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  orderId   String   @db.ObjectId
-  productId String   @db.ObjectId
-  vendorId  String   @db.ObjectId
-  name      String
-  image     String
-  qty       Int
-  productprice Float
-  total     Float
-  date      DateTime @default(now())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
   order     Order    @relation(fields: [orderId], references: [id])
   product   Product  @relation(fields: [productId], references: [id])
-  vendor    User   @relation(fields: [vendorId], references: [id])
 }
- 
+
+model Sale {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId      String   @db.ObjectId
+  productId    String   @db.ObjectId
+  vendorId     String   @db.ObjectId
+  name         String
+  image        String
+  qty          Int
+  productprice Float
+  total        Float
+  date         DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  order        Order    @relation(fields: [orderId], references: [id])
+  product      Product  @relation(fields: [productId], references: [id])
+  vendor       User     @relation(fields: [vendorId], references: [id])
+}

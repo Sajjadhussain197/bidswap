@@ -3,6 +3,18 @@ import React from 'react'
 import CategoryCarousel from './CategoryCarousel'
 
 export default function CategoryList({category}) {
+  console.log(category, "category to find servicetype")
+  let updatedProducts;
+  if(category.expiresAt && category.serviceType){
+    
+    updatedProducts = category.products.map(product => ({
+    ...product, // Spread existing product properties
+    expiresAt: category.expiresAt, // Add the expiresAt field from category
+    serviceType: category.serviceType, // Add the expiresAt field from category
+    saleprice: category.salePrice, // Add the expiresAt field from category
+  }));
+  }
+  console.log(updatedProducts,"updated category data")
   return (
     <div className='bg-white border border-gray-300 rounded-lg
     dark:bg-gray-700 dark:border-gray-700 text-slate-800 overflow-hidden'>
@@ -16,7 +28,16 @@ export default function CategoryList({category}) {
          
         </div>
         <div className="bg-white  dark:bg-slate-700 p-4">
-          <CategoryCarousel products={category.products}/>
+      {updatedProducts ?(
+          <CategoryCarousel products={updatedProducts} /> 
+
+      ):
+      (
+
+          <CategoryCarousel products={category.products} /> 
+      )
+
+      }
         </div>
 
       

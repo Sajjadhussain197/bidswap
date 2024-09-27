@@ -1,0 +1,271 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Post {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  slug      String    @unique
+  title     String
+  body      String
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  String    @db.ObjectId
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model User {
+  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  email              String     @unique
+  password           String
+  emailVerified      Boolean    @default(false)
+  name               String?
+  role               String
+  verificationToken  String?
+  profile            UserProfile?
+  address            Address?
+  posts              Post[]
+  products           Product[]  @relation("UserProducts")
+  Coupons            Coupon[]
+  Orders             Order[]
+  sales              Sale[]
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+}
+// Model for normal user profile
+model UserProfile {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique @db.ObjectId
+  // Add other fields for user onboarding information
+  // For example:
+  dateOfBirth DateTime?
+  address    String?
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Comment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  comment   String
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    String   @db.ObjectId
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+type Address {
+  street String
+  city   String
+  state  String
+  zip    String
+}
+
+model Coupon {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  code      String
+  date      DateTime
+  vendorId  String    @db.ObjectId
+  slug      String
+  isActive  Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  vendor    User   @relation(fields: [vendorId], references: [id], onDelete: Cascade, onUpdate:Cascade)
+}
+
+model Category {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  image       String
+  slug        String
+  products  Product[]  @relation("CategoryProducts")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Banner {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  link      String
+  image     String
+  slug      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Market {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String   @unique
+  image       String
+  description String
+  categories  String
+  slug        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Attribute {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String
+  image       String
+  slug        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Seller {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  contact   String
+  category  String
+  address   String
+  imageUrl  String
+  slug      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Training {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  category    String
+  description String
+  slug        String
+  content     String
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Staff {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  contactno      String
+  email          String   @unique
+  date           DateTime
+  isActive       Boolean
+  image          String
+  parentCategory String?
+  slug           String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  SELLER
+  MODERATOR
+}
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+model Product {
+  id                String    @id @default(auto()) @map("_id") @db.ObjectId
+  name              String    @unique
+  productprice      Float
+  saleprice         Float
+  description       String
+  isActive          Boolean
+  image             String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  isWholesale       Boolean
+  sku               String?
+  barcode           String?
+  productCode       String?
+  unit              String?
+  wholesalePrice    Float?
+  wholesaleQty      Int?
+  productStock      Int?
+  qty               Int?
+  orderItems        OrderItems[]
+  sales             Sale[]
+  category          Category  @relation("CategoryProducts", fields: [categoryId], references: [id])
+  categoryId        String    @db.ObjectId
+  seller            User?      @relation("UserProducts", fields: [userId], references: [id])
+  userId            String?   @db.ObjectId
+  serviceType       ServiceType? @relation(fields: [serviceTypeId], references: [id])
+  serviceTypeId     String?   @db.ObjectId
+}
+
+model ServiceType {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  products  Product[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ServiceTypeName {
+  BIDDING
+  BARTERING
+  SELLING
+}
+
+model Order {
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId         String    @db.ObjectId
+  firstName      String 
+  lastName       String
+  emailAddress   String
+  phoneNumber    String
+  streetAddress  String
+  city           String
+  country        String
+  district       String
+  shippingCost   Float
+  paymentMethod  String
+  orderItems     OrderItems[]
+  orderStatus    OrderStatus @default(PROCESSING) 
+  sales          Sale[]
+  orderNumber  String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  user           User      @relation(fields: [userId], references: [id])
+}
+model OrderItems {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String   @db.ObjectId
+  productId String   @db.ObjectId
+  vendorId  String   @db.ObjectId
+  quantity  Int
+  image     String
+  name      String
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+model Sale {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String   @db.ObjectId
+  productId String   @db.ObjectId
+  vendorId  String   @db.ObjectId
+  name      String
+  image     String
+  qty       Int
+  productprice Float
+  total     Float
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  order     Order    @relation(fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  vendor    User   @relation(fields: [vendorId], references: [id])
+}
+ 

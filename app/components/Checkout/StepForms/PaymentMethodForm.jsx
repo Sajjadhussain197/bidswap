@@ -49,7 +49,7 @@ export default function ShippingDetailsForm() {
       })
       // console.log({ data });
       window.location.href = url;
-      redirect(url);
+      // redirect(url);
 
     } catch (error) {
       console.log(error.message);
@@ -122,11 +122,11 @@ export default function ShippingDetailsForm() {
                         email: exitingformData.Email,
                         phone: exitingformData.Phone,
                         userId: exitingformData.userId,
-                        price: exitingformData.totalPrice 
+                        price: exitingformData.totalPrice,
                       })
-                      // console.log({ data });
-                      window.location.href = url;
-                      redirect(url);
+                      console.log( url); 
+                      dispatch(setCurrentStep(4));
+                      window.location.href = url ;
 
                     } catch (error) {
                       console.log(error.message);
