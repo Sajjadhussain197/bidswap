@@ -8,6 +8,7 @@ import adv from "@/public/adv.gif";
 import SidebarCategories from "./SidebarCategories";
 import { getData } from "@/lib/getData";
 import ServiceType from "./ServiceType";
+import PriceRanges from "./PriceRanges";
 
 export default async function Hero() {
     const banners = await getData("banners")
@@ -15,26 +16,7 @@ export default async function Hero() {
         <div className="grid grid-cols-12 gap-8 mb-6">
             <div className="col-span-3">
                 <SidebarCategories />
-                <div className="col-span-full mt-4 flex flex-col items-center justify-between border rounded-xl">
-                    <div className="bg-gray-200 p-2 rounded-t-lg w-full ">
-                        <span className="font-semibold text-black">Select the price range</span>
-                    </div>
-                    <hr className="w-full mb-2 border-gray-300" />
-                    <div className="flex justify-between w-full p-2">
-                        <input
-                            type="number"
-                            name="min"
-                            placeholder="Min"
-                            className="w-24 px-2 py-1 text-black rounded"
-                        />
-                        <input
-                            type="number"
-                            name="max"
-                            placeholder="Max"
-                            className="w-24 px-2 py-1 text-black rounded"
-                        />
-                    </div>
-                </div>
+                <PriceRanges />
             </div>
             <div className="col-span-full sm:col-span-7 rounded-md">
                 <HeroCarousel banners={banners} />

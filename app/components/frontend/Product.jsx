@@ -19,6 +19,9 @@ export default function Product({product}) {
         toast.success("Item added Successfully");
 
     }
+    const handleBid = ()=>[
+      console.log("bid")
+    ]
     // console.log(product, "Product")
   return (
     <div className="rounded-lg mr-3 bg-white dark:bg-slate-900 
@@ -33,29 +36,34 @@ export default function Product({product}) {
                   className="w-full h-48 object-cover"
                 />
               </Link>
-             {product.serviceType == "BIDDING" ? (
+             {product.serviceType == "BIDDING" ? 
+             (
               <div className="px-4 ">
                 <Link href={`/products/${product.slug}`} className='flex gap-2 justify-between items-center'>
                   <h2
                     className="text-center text-slate-800 my-2 
-                      dark:text-slate-200 font-semibold"
+                      dark:text-slate-200 font-semibold whitespace-nowrap"
                   >
                     {" "}
                     {product.name}
                   </h2>
-                <p>Rs {product.saleprice}</p>
+                <p className='whitespace-nowrap'>Rs {product.saleprice}</p>
                 </Link>
                 
-
-                <div
-                  className="flex items-center justify-between gap-2
-                  pb-3 dark:text-slate-200 text-slate-800"
-                ><span>Till: {
+                <div className='flex js'>
+                Till: {
                   new Date(product.expiresAt).
-                  toLocaleString('en-US', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' })}</span>
+                  toLocaleString('en-US', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' })}
+                  Remaining: {new Date(product.expiresAt - new Date().getTime()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  </div>
+                <div
+                  className="flex  items-center justify-between gap-2
+                  pb-3 dark:text-slate-200 text-slate-800"
+                >
+                
 
-
-                  <button onClick={()=>handleAddToCart()}
+                    <input type="text" name="" className='max-w-[55%] py-2 border rounded-sm' id="" />
+                  <button onClick={()=>handleBid()}
                     className="flex items-center space-x-2 bg-lime-600 px-4
                      py-2 rounded-md text-white "
                   >

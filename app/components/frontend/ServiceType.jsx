@@ -13,7 +13,7 @@ const ServiceType = () => {
       } else if (service === 'barting') {
         endpoint = '/api/barters'
       } else if (service === 'sale') {
-        endpoint = '/api/sales'
+        endpoint = '/'
       }
 
       const response = await fetch(endpoint)
@@ -31,7 +31,7 @@ const ServiceType = () => {
   useEffect(() => {
     console.log(selectedService)
     if (selectedService) {
-    //   fetchData(selectedService)
+      fetchData(selectedService)
     
     router.push(`/?serviceType=${encodeURIComponent(selectedService)}`);
     }
@@ -76,7 +76,7 @@ const ServiceType = () => {
                     name="service"
                     value="sale"
                     className="mr-2"
-                    onChange={handleServiceChange}
+                    // onChange={handleServiceChange}
                 />
                 <span className=" text-red-500">Sale</span>
             </label>

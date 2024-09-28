@@ -6,6 +6,30 @@ import Hero from "../components/frontend/Hero";
 import MarketList from "../components/frontend/MarketList";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions";
+function transformData(data) {
+  const transformed = data.reduce((result, product) => {
+    const { category, ...productDetails } = product;
+
+    // Check if the category already exists in the result array
+    let categoryIndex = result.findIndex(c => c.id === category.id);
+
+    if (categoryIndex === -1) {
+      // If category doesn't exist, add it with an empty products array
+      result.push({
+        ...category,
+        products: [productDetails] // Add the product to the products array
+      });
+    } else {
+      // If category exists, add the product to its products array
+      result[categoryIndex].products.push(productDetails);
+    }
+
+    return result;
+  }, []);
+
+  return transformed;
+}
+
 
 export default async function Home({ searchParams }) {
   const categoryId = searchParams?.category;
@@ -14,6 +38,8 @@ export default async function Home({ searchParams }) {
   
   const serviceType = searchParams.serviceType || ''; // Get the serviceType from searchParams
   const query = searchParams.query || ''; // Get the query from searchParams
+  const minprice = searchParams.minprice || ''; // Get the minprice from searchParams
+  const maxprice = searchParams.maxprice || ''; // Get the maxprice from searchParams
   
   
   if (categoryId) {
@@ -71,6 +97,18 @@ export default async function Home({ searchParams }) {
       // Convert the category map to an array
       categories = Object.values(categoryMap);
       console.log(categories, "search datas");
+    }
+    else if(minprice || maxprice){
+      
+    const queryParams = new URLSearchParams({ minprice, maxprice }).toString();
+    console.log(queryParams, "slug of query")
+    const categoryData = await getData(`products/product/?${queryParams}`);
+    console.log(categoryData,"prices")
+    if(categoryData){
+
+      categories = categoryData ? transformData(categoryData) : [];
+    }
+    // categories = categoryData ? [categoryData] : [];
     }
   else {
     categories = await getData("categories");

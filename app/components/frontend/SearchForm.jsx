@@ -18,7 +18,7 @@ export default function SearchForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      router.push(`/?query=${encodeURIComponent(searchTerm.trim())}`);
+      router.push(`/?category=${encodeURIComponent(searchTerm.trim())}`);
     } else {
       router.push('/');
     }
@@ -26,6 +26,9 @@ export default function SearchForm() {
 
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
+    if (e.target.value === '') {
+      router.push('/');
+    }
   };
 
   return (
