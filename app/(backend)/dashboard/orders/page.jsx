@@ -6,10 +6,10 @@ import React from 'react'
 
 export default async function Order() {
   // Fetch orders data
-  const orders = await getData("orders");
+  const userOrders = await getData("orders");
 
   // Log orders to check the data structure
-  console.log('Orders:', orders);
+  // console.log('Orders:', orders);
 
   const session = await getServerSession(authOptions);
 
@@ -20,14 +20,17 @@ export default async function Order() {
   console.log('User ID:', userId);
 
   // If orders are empty or not an array, return a message
-  if (!orders || !Array.isArray(orders) || orders.length === 0) {
+  if (!userOrders || !Array.isArray(userOrders) || userOrders.length === 0) {
     return (
       <p>No Orders yet</p>
     );
   }
 
   // Filter orders by the userId
-  const userOrders = orders.filter((order) => order.userId === userId);
+  // const userOrders = orders;
+  const filterdOrder = userOrders.filter((order) => order.userId === userId);
+  
+  console.log('Orders:', filterdOrder);
 
   return (
     <div>

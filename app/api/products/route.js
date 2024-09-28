@@ -240,9 +240,25 @@ export async function POST(request) {
 export async function GET() {
   try {
     console.log("Fetching products from product route GET");
-    const products = await db.product.findMany();
+    // const products = await db.product.findMany();
+    const productData = await db.product.findMany({
+      include: {
+        serviceType: {
+          select: {
+            name: true, // Fetch the 'name' field from the related serviceType schema
+          },
+        },
+      },
+    });
     
-    return NextResponse.json(products);
+    // Map the data to include 'servicetypename' alias
+    const dataWithServiceType = productData.map((product) => ({
+      ...product,
+      servicetypename: product.serviceType?.name || "No Service Type", // Alias the name field as servicetypename
+    }));
+    
+    
+    return NextResponse.json(dataWithServiceType);
 
   } catch (error) {
     console.error(error);

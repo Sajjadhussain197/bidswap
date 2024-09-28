@@ -66,6 +66,10 @@ export const columns = [
     cell: ({ row }) =>  (<DateColumn row={row} accessorKey="createdAt"/>) 
     
   },
+   {
+    accessorKey: "serviceType.name",
+    header: "Service",
+  },
   {
     id: "actions",
     cell: ({ row }) =>{

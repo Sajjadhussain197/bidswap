@@ -1,4 +1,6 @@
-import SalesInvoice from "@/components/Order/SalesInvoice";
+// import SalesInvoice from "@/components/Order/SalesInvoice";
+"use client"
+import SalesInvoice from "@/app/components/order/salesInvoice";
 import { getData } from "@/lib/getData";
 import React from "react";
 

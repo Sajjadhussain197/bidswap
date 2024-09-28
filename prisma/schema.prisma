@@ -38,6 +38,7 @@ model User {
   barters           Barter[]
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
+   bidders          Bidder[]     
 }
 
 model UserProfile {
@@ -194,6 +195,7 @@ model Product {
   qty            Int?
   orderItems     OrderItems[] 
   sales          Sale[] 
+  bidders        Bidder[]
   bids           Bid[]        @relation("ProductBids")
   barters        Barter[]     @relation("ProductBarters")
   category       Category     @relation("CategoryProducts", fields: [categoryId], references: [id])
@@ -218,9 +220,25 @@ model Bid {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   expiresAt DateTime
+   bidders        Bidder[]
   product   Product  @relation("ProductBids", fields: [productId], references: [id], onDelete: Cascade) // Specify relation name here
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+model Bidder {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  bidId     String?   @db.ObjectId // Reference to the main Bid
+  userId    String?   @db.ObjectId // Reference to the User who is bidding
+  productId String   @db.ObjectId // Reference to the Product being bid on
+  amount    Float    // Amount bid by the user
+  createdAt DateTime @default(now()) // When the user made the bid
+  updatedAt DateTime @updatedAt // Automatically updated on modification
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bid       Bid      @relation(fields: [bidId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
 
 model Barter {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId

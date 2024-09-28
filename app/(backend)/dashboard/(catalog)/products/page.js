@@ -19,7 +19,7 @@ export default async function Products() {
   console.log(role, "hey i am ");
 
   const allProducts = await getData("products");
-  console.log(allProducts, "all products");
+  // console.log(allProducts, "all products");
 
   // Filter products by seller (if not Admin)
   const sellerProducts = allProducts.filter((product) => product.userId=== id);
