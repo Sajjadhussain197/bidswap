@@ -79,8 +79,11 @@ export default async function Home({ searchParams }) {
           const expiresAt = Array.isArray(product.bids) && product.bids.length > 0 
             ? product.bids[0].expiresAt // Assuming first bid contains the expiration
             : null;
-      
+          const productExchange = Array.isArray(product.barters) && product.barters.length > 0 
+          ? product.barters[0].prductExchange // Assuming first bid contains the expiration
+          : null;
           categoryMap[categoryId].expiresAt = expiresAt;
+          categoryMap[categoryId].productExchange = productExchange;
       
           // Push the product into the corresponding category's products array
           categoryMap[categoryId].products.push({

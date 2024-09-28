@@ -51,7 +51,12 @@ export async function GET(request, { params }) {
           include: {
             category: true,
             bids: true,
-            serviceType: true
+            serviceType: true,
+            barters: {
+              select: {
+                prductExchange: true,  // Select only the productExchange field
+              }
+            }
           }
         });
 

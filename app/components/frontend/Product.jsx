@@ -1,5 +1,5 @@
 "use client"
-import { BaggageClaim } from 'lucide-react'
+import { BaggageClaim, Phone } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useState } from 'react'
@@ -48,6 +48,11 @@ export default function Product({ product }) {
       setError('An error occurred while placing the bid.');
     }
   }
+  const handleContact = ()=>{
+    const contact = '+923328764561'; // Replace with the full phone number in international format
+    // const contact = '+923349582197'; // Replace with the full phone number in international format
+    window.open(`https://wa.me/${contact}`, '_blank');
+  }
 
   return (
     <div className="rounded-lg mr-3 bg-white dark:bg-slate-900 
@@ -62,7 +67,8 @@ export default function Product({ product }) {
         />
       </Link>
 
-      {product.serviceType === "BIDDING" ? (
+      {product.serviceType === "BIDDING" ? 
+      (
         <div className="px-4">
           <Link href={`/products/${product.slug}`} className='flex gap-2 justify-between items-center'>
             <h2 className="text-center text-slate-800 my-2 dark:text-slate-200 font-semibold whitespace-nowrap">
@@ -73,11 +79,11 @@ export default function Product({ product }) {
 
           <div className='flex justify-between items-center py-2'>
             <p>
-              Till: {new Date(product.expiresAt).toLocaleString('en-US', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' })}
+              Till: <span className='text-red-500 font-bold'>{new Date(product.expiresAt).toLocaleString('en-US', { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' })}</span>
             </p>
-            <p>
+            {/* <p>
               Remaining: {new Date(product.expiresAt - new Date().getTime()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-            </p>
+            </p> */}
           </div>
 
           <div className="flex items-center justify-between gap-2 pb-3 dark:text-slate-200 text-slate-800">
@@ -97,7 +103,32 @@ export default function Product({ product }) {
           {error && <p style={{ color: 'red' }}>{error}</p>}
           {success && <p style={{ color: 'green' }}>{success}</p>}
         </div>
-      ) : (
+      ) :
+      (
+        <> {product.serviceType === "BARTING" ? 
+          (
+        <div className="px-4 flex flex-col gap-2">
+          <Link href={`/products/${product.slug}`}>
+            <h2 className="text-center text-slate-800 my-2 dark:text-slate-200 font-semibold">
+              {product.name}
+            </h2>
+            <p>Exchange: <span className='text-red-500 font-bold'>{product.productExchange}</span></p>
+          </Link>
+
+          <div className=" pb-3 dark:text-slate-200 text-slate-800">
+            
+            <button 
+            onClick={handleContact} 
+            className="flex items-center justify-between w-full space-x-2 bg-lime-600 px-4 py-2 rounded-md text-white">
+            <Phone />
+              <span>Contact sellar</span>
+            </button>
+          </div>
+        </div>
+      )
+
+        :
+          (
         <div className="px-4">
           <Link href={`/products/${product.slug}`}>
             <h2 className="text-center text-slate-800 my-2 dark:text-slate-200 font-semibold">
@@ -114,6 +145,11 @@ export default function Product({ product }) {
           </div>
         </div>
       )}
+      
+          
+        </>
+      )
+      }
     </div>
   )
 }

@@ -5,37 +5,22 @@ import { useRouter } from 'next/navigation'
 const ServiceType = () => {
   const [selectedService, setSelectedService] = useState('')
   const router = useRouter()
-  const fetchData = async (service) => {
-    try {
-      let endpoint = ''
-      if (service === 'bidding') {
-        endpoint = '/api/bids'
-      } else if (service === 'barting') {
-        endpoint = '/api/barters'
-      } else if (service === 'sale') {
-        endpoint = '/'
-      }
-
-      const response = await fetch(endpoint)
-      const data = await response.json()
-
-      // Send data to Product component
-      router.push({
-        pathname: '/product',
-        query: { data: JSON.stringify(data) },
-      })
-    } catch (error) {
-      console.error('Error fetching data:', error)
-    }
-  }
+ 
   useEffect(() => {
     console.log(selectedService)
     if (selectedService) {
-      fetchData(selectedService)
-    
-    router.push(`/?serviceType=${encodeURIComponent(selectedService)}`);
+    if(selectedService == 'sale'){
+      router.push(`/`);
+
+    }else{
+
+      router.push(`/?serviceType=${encodeURIComponent(selectedService)}`);
     }
-  }, [selectedService, fetchData])
+    }else{
+      router.push(`/`);
+
+    }
+  }, [selectedService])
 
   
 
@@ -76,7 +61,7 @@ const ServiceType = () => {
                     name="service"
                     value="sale"
                     className="mr-2"
-                    // onChange={handleServiceChange}
+                    onChange={handleServiceChange}
                 />
                 <span className=" text-red-500">Sale</span>
             </label>

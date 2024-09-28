@@ -18,7 +18,7 @@ export default function SearchForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
-      router.push(`/?category=${encodeURIComponent(searchTerm.trim())}`);
+      router.push(`/?query=${encodeURIComponent(searchTerm.trim())}`);
     } else {
       router.push('/');
     }

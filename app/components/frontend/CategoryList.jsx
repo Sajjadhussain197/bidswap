@@ -7,14 +7,23 @@ export default function CategoryList({category}) {
   let updatedProducts;
   if( category.serviceType){
     if(category.expiresAt){
-      
     updatedProducts = category.products.map(product => ({
       ...product, // Spread existing product properties
       expiresAt: category.expiresAt, // Add the expiresAt field from category
       serviceType: category.serviceType, // Add the expiresAt field from category
       saleprice: category.salePrice, // Add the expiresAt field from category
     }));
-    }else{
+    }else if(category.productExchange){
+      updatedProducts = category.products.map(product => ({
+        ...product, // Spread existing product properties
+        productExchange: category.productExchange, // Add the expiresAt field from category
+        serviceType: category.serviceType, // Add the expiresAt field from category
+        saleprice: category.salePrice, // Add the expiresAt field from category
+      }));
+      
+      // productExchange
+    }
+    else{
       updatedProducts = category.products.map(product => ({
         ...product, // Spread existing product properties
         // expiresAt: category.expiresAt, // Add the expiresAt field from category

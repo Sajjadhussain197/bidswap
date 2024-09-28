@@ -234,20 +234,20 @@ model Bidder {
   updatedAt DateTime @updatedAt // Automatically updated on modification
   
   // Relations
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bid       Bid      @relation(fields: [bidId], references: [id], onDelete: Cascade)
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bid       Bid?      @relation(fields: [bidId], references: [id], onDelete: Cascade)
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
-
 model Barter {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  productId String   @db.ObjectId
-  userId    String   @db.ObjectId
+  productId String?   @db.ObjectId
+  userId    String?   @db.ObjectId
+  prductExchange String 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  product   Product  @relation("ProductBarters", fields: [productId], references: [id], onDelete: Cascade) // Specify relation name here
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product?  @relation("ProductBarters", fields: [productId], references: [id], onDelete: Cascade) // Specify relation name here
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum ServiceTypeName {

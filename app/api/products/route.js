@@ -41,6 +41,7 @@ export async function POST(request) {
       productStock,
       qty,
       categoryId,
+      bartingInput,
       serviceTypeId,
       userId  // Add sellerId to the destructured request body
     } = body;
@@ -118,7 +119,19 @@ export async function POST(request) {
       });
 
       console.log('Created new bid:', newBid);
-      return NextResponse.json({ product: newProduct, bid: newBid });
+     
+      return NextResponse.json({ product: newProduct, bid: newBid , barter:newBarter});
+    }else if(serviceType && serviceType.name === "BARTING"){
+      console.log("we are in barting ")
+      const newBarter = await db.Barter.create({
+        data: {
+          productId: newProduct.id, // Reference to the created product
+          userId: userId, // Reference to the seller
+          prductExchange: bartingInput, // Specify any exchange type or details here
+        }
+      });
+
+      console.log('Created new barter:', newBarter);
     }
 
     // If the service type is not "BIDDING", return just the product

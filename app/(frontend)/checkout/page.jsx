@@ -4,6 +4,7 @@ import StepForm from "@/app/components/Checkout/StepForm";
 import Steps from "@/app/components/Checkout/Steps";
 import { useSearchParams } from "next/navigation"; // Hook to read query params
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 export default function CheckoutPage() {
   const steps = [
@@ -15,14 +16,6 @@ export default function CheckoutPage() {
 
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1); // Default step is 1
-
-  // Check if there's a step parameter in the query and update the current step
-  useEffect(() => {
-    const stepFromQuery = searchParams.get("step");
-    if (stepFromQuery) {
-      setCurrentStep(parseInt(stepFromQuery, 10)); // Convert query param to number
-    }
-  }, [searchParams]);
 
   return (
     <div className="bg-slate-200 dark:bg-slate-950 min-h-screen">
