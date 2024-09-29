@@ -6,6 +6,7 @@ import React from 'react'
 import { useSelector } from 'react-redux';
 
 export default function Steps({steps}) {
+  console.log("steps are working")
   const currentStep = useSelector ((store) => store.checkout.currentStep);
   const cartItems = useSelector((store)=>store.cart);
   return (

@@ -28,10 +28,10 @@ export async function checkout({ lineItems, currentStep, formData }) {
       currentStep,
       ...formData,
     });
-
-    const successUrl = `${window.location.origin}/checkout?${serializedData}`;
+    console.log(serializeFormData)
+    const successUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/checkout?${serializedData}`;
     const cancelUrl = `${window.location.origin}/checkout?${serializedData}`;
-
+    console.log(successUrl)
     const { error } = await stripe.redirectToCheckout({
       mode: "payment",
       lineItems,

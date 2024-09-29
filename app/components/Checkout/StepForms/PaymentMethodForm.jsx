@@ -1,26 +1,48 @@
-
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import NavButtons from './NavButtons';
 import { Circle, CreditCard, HeartHandshake } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCurrentStep, updatecheckoutFormData } from '@/redux/slices/checkoutSlice';
+const stripePromise = loadStripe("pk_test_51PSFuDHHaGHgPzUC3lmTE46I1T3GeXbf3uwVdiUblvr5NYbdx2mZXQgGogwjA8w5QTFQ3KjJrIF1Ho3Dwb2ayOIF006aBSIELT");
+ 
 
-export default function ShippingDetailsForm() {
+function ShippingDetailsForm() {
   const dispatch = useDispatch();
   const currentStep = useSelector((store) => store.checkout.currentStep);
   const exitingformData = useSelector((store) => store.checkout.checkoutFormData);
-  
+
   const { register, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: {
-      ...exitingformData,
-    },
+    defaultValues: { ...exitingformData },
   });
 
   const initialPaymentMethod = exitingformData?.PaymentMethod || "";
   const [PaymentMethod, setPaymentMethod] = useState(initialPaymentMethod);
+  const [clientSecret, setClientSecret] = useState('');
+
+  useEffect(() => {
+    const createPaymentIntent = async () => {
+      if (exitingformData.totalPrice > 0) {
+          try {
+              const response = await axios.post('/api/payment', {
+                  amount: exitingformData.totalPrice * 100, // amount in cents
+              });
+              console.log('Payment Intent Response:', response.data); // Log response
+              setClientSecret(response.data.clientSecret);
+          } catch (error) {
+              console.error('Error creating PaymentIntent:', error);
+          }
+      }
+  };
+  createPaymentIntent();
+  }, [exitingformData.totalPrice]);
+
+  const stripe = useStripe();
+  const elements = useElements();
 
   const processData = (data) => {
     data.PaymentMethod = PaymentMethod;
@@ -29,20 +51,23 @@ export default function ShippingDetailsForm() {
   };
 
   const payWithCreditCard = async () => {
-    try {
-      const { data: { url } } = await axios.post("/api/payment", {
-        firstName: exitingformData.FirstName,
-        lastName: exitingformData.LastName,
-        email: exitingformData.Email,
-        phone: exitingformData.Phone,
-        userId: exitingformData.userId,
-        price: exitingformData.totalPrice,
-      });
-      
-    dispatch(setCurrentStep(currentStep + 1));
-      window.location.href = url;
-    } catch (error) {
-      console.error("Payment error:", error.message);
+    
+    if (!stripe || !elements) {
+      return;
+    }
+
+    const cardElement = elements.getElement(CardElement);
+    console.log(cardElement)
+    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement,
+      },
+    });
+
+    if (error) {
+      console.error('Payment error:', error.message);
+    } else {
+      console.log('Payment successful:', paymentIntent);
     }
   };
 
@@ -97,7 +122,6 @@ export default function ShippingDetailsForm() {
                 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer
                 dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600
                 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:bg-gray-800"
-                onClick={payWithCreditCard}
               >
                 <div className="flex gap-2 items-center">
                   <CreditCard className="w-8 h-8 ms-3 flex-shrink-0 text-green-400" />
@@ -105,12 +129,26 @@ export default function ShippingDetailsForm() {
                 </div>
                 <Circle className="w-5 h-5 ms-3" />
               </label>
+              <CardElement />
             </li>
           </ul>
         </div>
       </div>
+      <button type="button" onClick={payWithCreditCard} className="bg-red-500 h-10 rounded-md w-20">
+        Pay Now
+      </button>
       <NavButtons />
     </form>
+  );
+}
+
+export default function StripeCheckoutWrapper() {
+  
+   console.log(stripePromise,"here is promise ")
+  return (
+    <Elements stripe={stripePromise}>
+      <ShippingDetailsForm />
+    </Elements>
   );
 }
 

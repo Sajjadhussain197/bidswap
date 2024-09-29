@@ -16,7 +16,11 @@ export default function CheckoutPage() {
 
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState(1); // Default step is 1
-
+  useEffect(() => {
+        const query = new URLSearchParams(window.location.search);
+        console.log(query.get('size'))
+  }, [])
+  
   return (
     <div className="bg-slate-200 dark:bg-slate-950 min-h-screen">
       <div className="max-w-3xl my-6 mx-auto border border-lime-500 p-6">
