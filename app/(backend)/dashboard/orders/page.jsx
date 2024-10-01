@@ -6,31 +6,21 @@ import React from 'react'
 
 export default async function Order() {
   // Fetch orders data
-  const userOrders = await getData("orders");
-
-  // Log orders to check the data structure
-  // console.log('Orders:', orders);
-
+  const orders = await getData("orders");
+  // console.log(orders)
   const session = await getServerSession(authOptions);
-
-  // If no session, return nothing
   if (!session) return;
-
   const userId = session?.user?.id;
-  console.log('User ID:', userId);
-
-  // If orders are empty or not an array, return a message
-  if (!userOrders || !Array.isArray(userOrders) || userOrders.length === 0) {
+  const Role = session?.user?.role;
+  console.log(session);
+  if (!orders || !Array.isArray(orders) || orders.length === 0) {
     return (
       <p>No Orders yet</p>
     );
   }
-
-  // Filter orders by the userId
-  // const userOrders = orders;
-  const filterdOrder = userOrders.filter((order) => order.userId === userId);
+  const userOrders = orders.filter((order) => order.userId === userId);
   
-  console.log('Orders:', filterdOrder);
+  // console.log('Orders:', userOrders);
 
   return (
     <div>
@@ -46,11 +36,25 @@ export default async function Order() {
 
             {/* Display user orders */}
             <ul className="mt-8 space-y-5 lg:mt-12 sm:space-y-6 lg:space-y-10">
+            {Role == 'ADMIN' ? (
+              <>
+                
+              {orders.length > 0 ? (
+                orders.map((order, i) => <OrderCard key={i} order={order} />)
+              ) : (
+                <p>No orders found for this user.</p>
+              )}
+              </>
+            ):(
+              <>
+                
               {userOrders.length > 0 ? (
                 userOrders.map((order, i) => <OrderCard key={i} order={order} />)
               ) : (
                 <p>No orders found for this user.</p>
               )}
+              </>
+            )}
             </ul>
           </div>
         </div>

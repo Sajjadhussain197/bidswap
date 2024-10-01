@@ -7,17 +7,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Post {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  slug      String    @unique
-  title     String
-  body      String
-  author    User      @relation(fields: [authorId], references: [id])
-  authorId  String    @db.ObjectId
-  comments  Comment[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
 
 model User {
   id                String       @id @default(auto()) @map("_id") @db.ObjectId
@@ -38,7 +27,21 @@ model User {
   barters           Barter[]
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
-   bidders          Bidder[]     
+  bidders          Bidder[]     
+  resetToken        String?  // Add this line
+  resetTokenExpiry  DateTime? // 
+}
+
+model Post {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  slug      String    @unique
+  title     String
+  body      String
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  String    @db.ObjectId
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model UserProfile {

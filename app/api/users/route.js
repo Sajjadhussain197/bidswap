@@ -44,13 +44,29 @@ console.log("EMAIL_PASSWORD:", process.env.APP_PASSWORD);
 
         const hashedPassword = await bcrypt.hash(password, 10);
         const rawToken = uuidv4();
-        const token = base64url.encode(rawToken);
-
+        const token = base64url.encode(rawToken); 
+        const resetToken = base64url.encode(uuidv4()); // Generate a reset token
+        // const resetTokenExpiry = new Date();           // Set the expiry time
+        // resetTokenExpiry.setHours(resetTokenExpiry.getHours() + 1); // Token expires in 1 hour
         let newUser;
         try {
             newUser = await db.user.create({
-                data: { name, email, password: hashedPassword, verificationToken: token, role },
+                data: { name, email, password: hashedPassword, verificationToken: token              // Add reset token
+                    , role },
             });
+
+            try {
+                await db.userProfile.create({
+                    data: {
+                         userId: newUser.id, // Reference to the newly created user
+                    dateOfBirth: null,   // Placeholder
+                    address: null,
+                    },
+                });
+            } catch (profileError) {
+                console.error('Error creating user profile:', profileError);
+                // Optionally handle the error (rollback, etc.)
+            }
         } catch (dbError) {
             console.error('Database error:', dbError);
             return NextResponse.json({
@@ -85,7 +101,6 @@ console.log("EMAIL_PASSWORD:", process.env.APP_PASSWORD);
                 // Log the error but don't prevent user creation
             }
         }
-
         return NextResponse.json(
             {
               data: newUser,

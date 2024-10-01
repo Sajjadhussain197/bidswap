@@ -1,59 +1,153 @@
-import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
-import db from "@/lib/db";
-import { v4 as uuidv4 } from "uuid";
-import base64url from "base64url";
-import { Resend } from "resend";
-import EmailTemplate from "@/app/components/frontend/EmailTemplate";
+import { NextResponse } from 'next/server';
+import db from '@/lib/db';
+import { v4 as uuidv4 } from 'uuid';
+import base64url from 'base64url';
+import nodemailer from 'nodemailer';
+import { EmailTemplate } from '@/app/components/frontend/EmailTemplate';
+import { render } from '@react-email/render';
+
+// Configure nodemailer to use your email service
+const transport = nodemailer.createTransport({
+    service: 'gmail', // Or another email service
+    auth: {
+        user: process.env.EMAIL_FROM,
+        pass: process.env.APP_PASSWORD // Use an app-specific password
+    }
+});
 
 export async function PUT(request) {
-  console.log('recieved');
-  const resend = new Resend(process.env.RESEND_API_KEY);
-  try {
-    const { email } = await request.json();
-    
-    if (!email) {
-      return NextResponse.json({ message: "Email is required" }, { status: 400 });
+    try {
+        const { email } = await request.json();
+
+        // Check if the email is valid
+        if (!email) {
+            return NextResponse.json({ message: 'Email is required' }, { status: 400 });
+        }
+
+        // Find the user by email
+        const existingUser = await db.user.findUnique({ where: { email } });
+        if (!existingUser) {
+            return NextResponse.json({ message: 'User not found' }, { status: 404 });
+        }
+
+        // Generate a reset token
+        const rawToken = uuidv4();
+        const resetToken = base64url.encode(rawToken);
+        
+        // Set the expiry time for the reset token
+        const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour expiry
+
+        // Log the user update operation
+        console.log('Updating user with email:', email);
+        console.log('Reset token:', resetToken);
+        console.log('Reset token expiry:', resetTokenExpiry);
+
+        // Update the user with the reset token and expiration
+        await db.user.update({
+            where: { email },
+            data: {
+                resetToken: resetToken,
+               resetTokenExpiry: new Date(Date.now() + 3600000)
+            },
+        });
+
+        // Construct the reset password URL
+        const redirectUrl = `/reset-password?token=${resetToken}&id=${existingUser.id}`;
+        const subject = 'Password Reset - BidSwap360';
+        const description = 'Please click the link below to reset your password.';
+        const linkText = 'Reset Password';
+
+        // Render the email template
+        const emailHtml = await render(EmailTemplate({
+            name: existingUser.name,
+            redirectUrl,
+            linkText,
+            description,
+            subject,
+        }));
+
+        // Send the email
+        const info = await transport.sendMail({
+            from: process.env.EMAIL_FROM,
+            to: email,
+            subject: subject,
+            html: emailHtml,
+        });
+
+        console.log('Email sent:', info.response);
+
+        return NextResponse.json({
+            message: 'Password reset email sent successfully',
+        }, { status: 200 });
+
+    } catch (error) {
+        console.error('Error processing reset request:', error);
+        return NextResponse.json({
+            message: 'Failed to send password reset email',
+            error: error.message || 'Unknown error'
+        }, { status: 500 });
     }
-
-    const existingUser = await db.user.findUnique({ where: { email } });
-    
-    if (!existingUser) {
-      return NextResponse.json({ data: null, message: "User Not Found" }, { status: 404 });
-    }
-
-    console.log('Received in PUT');
-    
-    const rawToken = uuidv4();
-    const token = base64url.encode(rawToken);
-
-    const linkText = "Reset Password";
-    const userId = existingUser.id;
-    const name = existingUser.name;
-    const redirectUrl = `reset-password?token=${token}&id=${userId}`;
-    const description = "Click on the following link in order to reset your password. Thank you";
-    const subject = "Password Reset - BidSwap360";
-    
-    console.log(userId, name, redirectUrl);
-    
-    const sendMail = await resend.emails.send({
-      from: "Desishub <info@jazzafricaadventures.com>",
-      to: email,
-      subject: subject,
-      react: EmailTemplate({
-        name,
-        redirectUrl,
-        linkText,
-        description,
-        subject,
-      }),
-    });
-    
-    console.log("SendMail Response:", sendMail);
-    
-    return NextResponse.json({ data: null, message: "Password reset email sent successfully" }, { status: 200 });
-  } catch (error) {
-    console.error("Error in sending email:", error);
-    return NextResponse.json({ error, message: "Server Error: Something went wrong" }, { status: 500 });
-  }
 }
+
+// export async function PUT(request) {
+//     try {
+//         const { email } = await request.json();
+
+//         // Check if the email is valid
+//         if (!email) {
+//             return NextResponse.json({ message: 'Email is required' }, { status: 400 });
+//         }
+
+//         // Find the user by email
+//         const existingUser = await db.user.findUnique({ where: { email } });
+//         if (!existingUser) {
+//             return NextResponse.json({ message: 'User not found' }, { status: 404 });
+//         }
+
+//         // Generate a reset token
+//         const rawToken = uuidv4();
+//         const resetToken = base64url.encode(rawToken);
+
+//         // Update the user with the reset token and expiration (optional)
+//         await db.user.update({
+//             where: { email },
+//             data: { resetToken, resetTokenExpiry: Date.now() + 3600000 }, // 1 hour expiry
+//         });
+
+//         // Construct the reset password URL
+//         const redirectUrl = `/reset-password?token=${resetToken}&id=${existingUser.id}`;
+//         const subject = 'Password Reset - BidSwap360';
+//         const description = 'Please click the link below to reset your password.';
+//         const linkText = 'Reset Password';
+
+//         // Render the email template
+//         const emailHtml = await render(EmailTemplate({
+//             name: existingUser.name,
+//             redirectUrl,
+//             linkText,
+//             description,
+//             subject,
+//         }));
+
+//         // Send the email
+//         const info = await transport.sendMail({
+//             from: process.env.EMAIL_FROM,
+//             to: email,
+//             subject: subject,
+//             html: emailHtml,
+//         });
+
+//         console.log('Email sent:', info.response);
+
+//         return NextResponse.json({
+//             message: 'Password reset email sent successfully',
+//         }, { status: 200 });
+
+//     } catch (error) {
+//         console.error('Error processing reset request:', error);
+//         return NextResponse.json({
+//             message: 'Failed to send password reset email',
+//             error: error.message || 'Unknown error'
+//         }, { status: 500 });
+//     }
+// }

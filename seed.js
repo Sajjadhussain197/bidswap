@@ -1,33 +1,19 @@
-// seed.js
 const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 
-async function main() {
-  // Define the service types you want to seed
-  const serviceTypes = [
-    { name: 'BIDDING' },
-    { name: 'BARTING' },
-    { name: 'SELLING' },
+async function verifyFields() {
+  const user = await prisma.user.findUnique({
+    where: {
+      email: 'hakathon197@gmail.com',
+    },
+  });
 
-    // Add more service types as needed
-  ];
-
-  // Iterate over each service type and create it in the database
-  for (const service of serviceTypes) {
-    await prisma.serviceType.create({
-      data: service,
-    });
-  }
-
-  console.log('Service types seeded successfully');
+  console.log('User:', user);
 }
 
-main()
-  .catch(e => {
-    console.error(e);
-    process.exit(1);
-  })
+verifyFields()
+  .catch((e) => console.error(e))
   .finally(async () => {
     await prisma.$disconnect();
   });

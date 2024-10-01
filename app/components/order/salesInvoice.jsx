@@ -5,21 +5,24 @@ import React, { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 //import { convertIsoDateToNormal } from "@/lib/convertIsoDateToNormal";
 export default function SalesInvoice({order}) {
+  console.log(order, "order here")
+  const shippingCost = order.shippingCost;
   const logo = "abc"
    // const invoiceDate =convertIsoDateToNormal(order.createdAt);
-    console.log(cartItems);
+    // console.log(cartItems);
   const subTotal =order.orderItems.reduce((acc,currentItem)=>{
    return acc + (currentItem.saleprice * currentItem.quantity)
   },0) ?? 0 
   const tax =20;
   const total =(parseFloat(subTotal) +  parseFloat(tax)).toFixed(2);
-  const handlePrint =useReactToPrint({
-    content :()=>  invoiceRef.current,
-      })
+  // const handlePrint =useReactToPrint({
+  //   content :()=>  invoiceRef.current,
+  //     })
   return (
     <div className="flex flex-col">
         <div className="flex items-end justify-end">
-    <button onClick={handlePrint}
+    <button
+    //  onClick={handlePrint}
       type="button"
       className="inline-flex items-center justify-center px-4 py-3 text-xs font-bold
       dark:text-gray-900 transition-all duration-200 bg-slate-800 text-slate-200
@@ -29,7 +32,9 @@ export default function SalesInvoice({order}) {
       Download/Print  Invoice
     </button>
   </div>
-  <div ref={invoiceRef}>  
+  <div 
+  // ref={invoiceRef}
+  >  
   <div className="max-w-4xl mx-auto border border-gray-500 p-8 rounded-sm 
    text-slate-800 dark:text-slate-200 bg-white dark:bg-slate-800">
       {/* Header */}
@@ -41,7 +46,7 @@ export default function SalesInvoice({order}) {
           <p>Canada</p>
           <p>shopiifystore@gmail.com</p>
         </div>
-        <Image src={logo} alt="limifood logo" className="w-36 h-16" />
+        <img src={logo} alt="limifood logo" className="w-36 h-16" />
       </div>
       {/* Header End */}
       <div className="flex justify-between border-b border-gray-500 py-8">
@@ -59,11 +64,11 @@ export default function SalesInvoice({order}) {
           </div>
           <div className="flex justify-between">
             <p>Invoice Date</p>
-            <p>{invoiceDate}</p>
+            {/* <p>{invoiceDate}</p> */}
           </div>
           <div className="flex justify-between">
             <p>Amount Due</p>
-            <p>${subTotal}</p>
+            <p>${order.orderItems[0].price}</p>
           </div>
         </div>
       </div>
@@ -99,12 +104,12 @@ export default function SalesInvoice({order}) {
                           scope="row"
                           className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                         >
-                         {item.title}
+                         {item.name}
                         </th>
                         <td className="px-6 py-4">Silver</td>
                         <td className="px-6 py-4">{item.quantity}</td>
-                        <td className="px-6 py-4">{item.saleprice}</td>
-                        <td className="px-6 py-4">{item.subTotal}</td>
+                        <td className="px-6 py-4">{item.price}</td>
+                        <td className="px-6 py-4">${parseFloat(item.price) + parseFloat(shippingCost)}</td>
                       </tr> 
                     )
                 }
@@ -122,7 +127,7 @@ export default function SalesInvoice({order}) {
         <div className="flex flex-col">
           <div className="flex justify-between gap-4">
             <p>SubTotal</p>
-            <p>${subTotal}</p>
+            <p>${parseFloat(order.orderItems[0].price) + parseFloat(order.shippingCost)}</p>
           </div>
           <div className="flex justify-between gap-4">
             <p>Tax</p>
@@ -130,12 +135,12 @@ export default function SalesInvoice({order}) {
           </div>
           <div className="flex justify-between gap-4">
             <p>Total</p>
-            <p>${total}</p>
+            <p>${parseFloat(tax) + parseFloat(order.orderItems[0].price) + parseFloat(order.shippingCost)}</p>
           </div>
         </div>
       </div>
       <div className="flex justify-center items-center pt-8">
-        <Image src={logo} alt="BidSwap360 logo" className="w-36 h-16" />
+        <img src={logo} alt="BidSwap360 logo" className="w-36 h-16" />
       </div>
     </div>
   </div>

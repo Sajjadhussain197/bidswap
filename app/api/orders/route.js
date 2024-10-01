@@ -106,7 +106,17 @@ export async function POST(request) {
 
 export async function GET() {
   try {
-    const orders = await db.order.findMany();
+    console.log('total orders fetching')
+    const orders = await db.order.findMany({
+      include: {
+        sales: { // Include sales information
+          select: {
+            total: true, // Include only the total from Sale
+          },
+        },
+      },
+    });
+    
     return NextResponse.json(orders);
   } catch (error) {
     console.error(error);

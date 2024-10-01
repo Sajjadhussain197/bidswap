@@ -23,6 +23,7 @@ function ShippingDetailsForm() {
   const initialPaymentMethod = exitingformData?.PaymentMethod || "";
   const [PaymentMethod, setPaymentMethod] = useState(initialPaymentMethod);
   const [clientSecret, setClientSecret] = useState('');
+  const [paymentStatus, setPaymentStatus] = useState(null);
 
   useEffect(() => {
     const createPaymentIntent = async () => {
@@ -66,8 +67,10 @@ function ShippingDetailsForm() {
 
     if (error) {
       console.error('Payment error:', error.message);
+      setPaymentStatus('Card Payment Failed');
     } else {
       console.log('Payment successful:', paymentIntent);
+      setPaymentStatus('Card Payment succeeded');
     }
   };
 
@@ -123,20 +126,26 @@ function ShippingDetailsForm() {
                 dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600
                 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:bg-gray-800"
               >
-                <div className="flex gap-2 items-center">
+                <div className="flex gap-2 items-center ">
                   <CreditCard className="w-8 h-8 ms-3 flex-shrink-0 text-green-400" />
                   <p>Pay with Credit Card</p>
                 </div>
                 <Circle className="w-5 h-5 ms-3" />
+
               </label>
-              <CardElement />
+              <CardElement className='py-3 border mt-2 rounded-md w-full'/>
+              <div className="mt-5 flex flex-col gap-2 items-end">
+          
+                  <button type="button" onClick={payWithCreditCard} className="bg-green-500 h-12 px-5 rounded-md  w-25">
+                    Pay Now
+                  </button>
+              </div>
+                  {paymentStatus && <p>{paymentStatus}</p>}
             </li>
           </ul>
+        
         </div>
       </div>
-      <button type="button" onClick={payWithCreditCard} className="bg-red-500 h-10 rounded-md w-20">
-        Pay Now
-      </button>
       <NavButtons />
     </form>
   );
