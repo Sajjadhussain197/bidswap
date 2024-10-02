@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb'; // Import ObjectId for validation
 
 export async function GET(request, { params }) {
   const { id } = params; // Extract the product ID from params (if applicable)
+  console.log(id, "backend product id")
   const url = new URL(request.url);
   console.log(url,"url from get product")
   const serviceTypeQuery = url.searchParams.get('serviceType'); // Extract serviceType query parameter
@@ -12,90 +13,90 @@ export async function GET(request, { params }) {
 
   try {
     // Check if `id` is provided and if it's a valid ObjectId
-    // if (id && ObjectId.isValid(id)) {
-    //   // Fetch a specific product by ID
-    //   const product = await db.product.findUnique({
-    //     where: { id },
-    //     include: {
-    //       category: true, // Include category details
-    //       bids: true,     // Include bid details if they exist
-    //       serviceType: true, // Include service type details
-    //     }
-    //   });
+    if (id && ObjectId.isValid(id)) {
+      // Fetch a specific product by ID
+      const product = await db.product.findUnique({
+        where: { id },
+        include: {
+          category: true, // Include category details
+          bids: true,     // Include bid details if they exist
+          serviceType: true, // Include service type details
+        }
+      });
 
-    //   if (!product) {
-    //     return NextResponse.json({ message: 'Product not found' }, { status: 404 });
-    //   }
+      if (!product) {
+        return NextResponse.json({ message: 'Product not found' }, { status: 404 });
+      }
 
-    //   return NextResponse.json(product);
+      return NextResponse.json(product);
 
-    // } else if (serviceTypeQuery) {
-    //   // Search by serviceType
-    //   const serviceType = await db.serviceType.findFirst({
-    //     where: {
-    //       name: { equals: serviceTypeQuery, mode: 'insensitive' } // Find service type by name
-    //     }
-    //   });
+    } else if (serviceTypeQuery) {
+      // Search by serviceType
+      const serviceType = await db.serviceType.findFirst({
+        where: {
+          name: { equals: serviceTypeQuery, mode: 'insensitive' } // Find service type by name
+        }
+      });
 
-    //   if (serviceType) {
-    //     // Fetch products by service type ID
-    //     const products = await db.product.findMany({
-    //       where: { serviceTypeId: serviceType.id },
-    //       include: {
-    //         category: true,
-    //         bids: true,
-    //         serviceType: true
-    //       }
-    //     });
+      if (serviceType) {
+        // Fetch products by service type ID
+        const products = await db.product.findMany({
+          where: { serviceTypeId: serviceType.id },
+          include: {
+            category: true,
+            bids: true,
+            serviceType: true
+          }
+        });
 
-    //     if (products.length === 0) {
-    //       return NextResponse.json({ message: 'No products found for the given service type' }, { status: 404 });
-    //     }
+        if (products.length === 0) {
+          return NextResponse.json({ message: 'No products found for the given service type' }, { status: 404 });
+        }
 
-    //     return NextResponse.json(products);
-    //   } else {
-    //     return NextResponse.json({ message: 'Service type not found' }, { status: 404 });
-    //   }
+        return NextResponse.json(products);
+      } else {
+        return NextResponse.json({ message: 'Service type not found' }, { status: 404 });
+      }
 
-    // } else if (searchText) {
-    //   // Search by product name, description, or category
-    //   const products = await db.product.findMany({
-    //     where: {
-    //       OR: [
-    //         { name: { contains: searchText, mode: 'insensitive' } },
-    //         { description: { contains: searchText, mode: 'insensitive' } },
-    //         {
-    //           category: {
-    //             name: { contains: searchText, mode: 'insensitive' }
-    //           }
-    //         }
-    //       ]
-    //     },
-    //     include: {
-    //       category: true,
-    //       bids: true,
-    //       serviceType: true
-    //     }
-    //   });
+    } else if (searchText) {
+      // Search by product name, description, or category
+      const products = await db.product.findMany({
+        where: {
+          OR: [
+            { name: { contains: searchText, mode: 'insensitive' } },
+            { description: { contains: searchText, mode: 'insensitive' } },
+            {
+              category: {
+                name: { contains: searchText, mode: 'insensitive' }
+              }
+            }
+          ]
+        },
+        include: {
+          category: true,
+          bids: true,
+          serviceType: true
+        }
+      });
 
-    //   if (products.length === 0) {
-    //     return NextResponse.json({ message: 'No products found for the search query' }, { status: 404 });
-    //   }
+      if (products.length === 0) {
+        return NextResponse.json({ message: 'No products found for the search query' }, { status: 404 });
+      }
 
-    //   return NextResponse.json(products);
+      return NextResponse.json(products);
 
-    // } else {
-    //   // Fetch all products if no query is provided
-    //   const products = await db.product.findMany({
-    //     include: {
-    //       category: true,
-    //       bids: true,
-    //       serviceType: true
-    //     }
-    //   });
+    } else {
+      // Fetch all products if no query is provided
+      const products = await db.product.findMany({
+        include: {
+          category: true,
+          bids: true,
+          serviceType: true
+        }
+      });
 
-    //   return NextResponse.json(products);
-    // }
+      return NextResponse.json(products);
+    }
 
   } catch (error) {
     console.error('Error Fetching product:', error);

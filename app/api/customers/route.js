@@ -42,7 +42,11 @@ try {
 }
 export async function GET() {
     try {
-      const sellers = await db.seller.findMany();
+      const sellers = await db.user.findMany({
+        where: {
+          role: "SELLER"
+        }
+      });
       return NextResponse.json(sellers);
   
     } catch (error) {

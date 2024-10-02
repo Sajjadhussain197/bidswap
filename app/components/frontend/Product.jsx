@@ -8,6 +8,7 @@ import { addToCart } from '@/redux/slices/cartSlice'
 import toast from 'react-hot-toast'
 
 export default function Product({ product }) {
+  console.log(product,"end product details")
   const dispatch = useDispatch();
   const [bidAmount, setBidAmount] = useState('');
   const [error, setError] = useState('');
@@ -57,7 +58,7 @@ export default function Product({ product }) {
   return (
     <div className="rounded-lg mr-3 bg-white dark:bg-slate-900 
     overflow-hidden border shadow" >
-      <Link href={`/products/${product.slug}`}>
+      <Link href={`/products/${product.id}`}>
         <Image
           src={product.image}
           alt={product.name}
@@ -70,7 +71,7 @@ export default function Product({ product }) {
       {product.serviceType === "BIDDING" ? 
       (
         <div className="px-4">
-          <Link href={`/products/${product.slug}`} className='flex gap-2 justify-between items-center'>
+          <Link href={`/products/${product.id}`} className='flex gap-2 justify-between items-center'>
             <h2 className="text-center text-slate-800 my-2 dark:text-slate-200 font-semibold whitespace-nowrap">
               {product.name}
             </h2>
@@ -108,7 +109,7 @@ export default function Product({ product }) {
         <> {product.serviceType === "BARTING" ? 
           (
         <div className="px-4 flex flex-col gap-2">
-          <Link href={`/products/${product.slug}`}>
+          <Link href={`/products/${product.id}`}>
             <h2 className="text-center text-slate-800 my-2 dark:text-slate-200 font-semibold">
               {product.name}
             </h2>
@@ -130,7 +131,7 @@ export default function Product({ product }) {
         :
           (
         <div className="px-4">
-          <Link href={`/products/${product.slug}`}>
+          <Link href={`/products/${product.id}`}>
             <h2 className="text-center text-slate-800 my-2 dark:text-slate-200 font-semibold">
               {product.name}
             </h2>

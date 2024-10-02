@@ -1,4 +1,5 @@
 
+"use client"
 import CategoryCarousel from '@/app/components/frontend/CategoryCarousel'
 import { BaggageClaim, Minus, Plus, Send, Share2, Tag } from 'lucide-react'
 import Image from 'next/image'
@@ -7,9 +8,18 @@ import React from 'react';
 import { Label, Select } from "flowbite-react";
 import BreadCrumb from '@/app/components/frontend/BreadCrumb';
 import { getData } from '@/lib/getData';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '@/redux/slices/cartSlice'
+import toast from 'react-hot-toast'
 
 export default async function ProductDetailPage({params:{slug}}) {
-   const product = await getData(`products/product/${slug}`)
+  const dispatch = useDispatch();
+   const product = await Promise.resolve(getData(`products/product/${slug}`))
+   console.log(product, "slug id data is searched here")
+   function handleAddToCart() {
+    dispatch(addToCart(product));
+    toast.success("Item added Successfully");
+  }
   return (
     <div>
         <BreadCrumb/>
@@ -33,18 +43,26 @@ export default async function ProductDetailPage({params:{slug}}) {
 
                 </div>
                 <div className="border-b border-gray-500">
-                    <p className='py-2 '>{product.description}</p>
+                    <p className='py-2 '>
+                    {product.description}
+                    </p>
                     <div className="flex items-center gap-8  mb-4">
                       <p>{product.sku}</p>
                       <p className='bg-lime-200 py-1.5 px-4 rounded-full 
-                       text-slate-900'><b>Stock:</b>{product.qty}</p>
+                       text-slate-900'><b>Stock:</b>
+                       {product.qty? product.qty : "In Stock"}
+                       </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-4 justify-between pt-4
                  border-b border-gray-500 pb-4">
                     <div className="flex  items-center gap-4">
-                        <h4 className='text-2xl'>${product.saleprice}</h4>
-                        <del className='text-slate-500 text-sm'>${product.saleprice}</del>
+                        <h4 className='text-2xl'>
+                        ${product.saleprice}
+                        </h4>
+                        <del className='text-slate-500 text-sm'>
+                        ${product.saleprice}
+                        </del>
                     </div>
                     <p className='flex items-center '>
                         <Tag className='w-5 h-5 text-slate-400 me-2'/>
@@ -63,7 +81,8 @@ export default async function ProductDetailPage({params:{slug}}) {
                         </button>
 
                     </div>
-                    <button className='flex items-center space-x-2 bg-lime-600 px-4
+                    <button onClick={handleAddToCart}
+                    className='flex items-center space-x-2 bg-lime-600 px-4
                      py-2 rounded-md text-white'>
                         <BaggageClaim/>
                         <span>Add to Cart</span>
@@ -138,8 +157,8 @@ export default async function ProductDetailPage({params:{slug}}) {
 
         <div className="bg-white dark:bg-slate-700 my-8 rounded p-4">
             <h2 className='mb-4 text-xl font-semibold text-slate-400 ml-3'>Similar Products</h2>
-            <CategoryCarousel/>
-          {/* <CategoryCarousel products={category.products}/> */}
+            {/* <CategoryCarousel/> */}
+          {/* <CategoryCarousel products={product.category}/> */}
         </div>
       
     </div>

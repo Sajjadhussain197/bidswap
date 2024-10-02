@@ -31,7 +31,13 @@ model User {
   resetToken        String?  // Add this line
   resetTokenExpiry  DateTime? // 
 }
-
+model UserProfile {
+  id          String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String    @unique @db.ObjectId
+  dateOfBirth DateTime?
+  address     String?
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 model Post {
   id        String    @id @default(auto()) @map("_id") @db.ObjectId
   slug      String    @unique
@@ -44,13 +50,7 @@ model Post {
   updatedAt DateTime  @updatedAt
 }
 
-model UserProfile {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String    @unique @db.ObjectId
-  dateOfBirth DateTime?
-  address     String?
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
+
 
 model Comment {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId

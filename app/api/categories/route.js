@@ -19,9 +19,6 @@ export async function POST(request) {
           description,
           image,
           slug,
-          products: {
-            create: products // Create products and link them to the category
-          }
         },
         include: {
           products: true // Include related products in the response

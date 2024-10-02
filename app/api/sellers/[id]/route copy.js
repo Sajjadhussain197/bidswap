@@ -40,15 +40,45 @@ try {
     },{status:500})
 }
 }
-export async function GET() {
+export async function GET({ params }) {
+  console.log(params.id, "backend id")
+    // try {
+    //   if (params.id) {
+    //     const seller = await db.user.findUnique({
+    //       where: { id: params.id },
+    //     });
+    //     if (!seller) {
+    //       return NextResponse.json(
+    //         { message: 'Seller not found' },
+    //         { status: 404 }
+    //       );
+    //     }
+    //     return NextResponse.json(seller);
+    //   } else {
+    //     const sellers = await db.user.findMany();
+    //     return NextResponse.json(sellers);
+    //   }
+    // } catch (error) {
+    //   console.error(error);
+    //   return NextResponse.json(
+    //     { message: 'Unable to fetch Sellers', error },
+    //     { status: 500 }
+    //   );
+    // }
+  }
+  export async function PUT({ params }) {
     try {
-      const sellers = await db.seller.findMany();
-      return NextResponse.json(sellers);
-  
+      const { id } = params;
+      const { name, email, contact, category, address, imageUrl, slug } = await request.json();
+      const updatedSeller = await db.seller.update({
+        where: { id },
+        data: { name, email, contact, category, address, imageUrl, slug }
+      });
+      return NextResponse.json(updatedSeller);
     } catch (error) {
       console.error(error);
       return NextResponse.json(
-        { message: 'Unable to fetch Sellers', error },
+        { message: 'Unable to update Seller', error },
         { status: 500 }
       );
     }
