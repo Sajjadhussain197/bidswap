@@ -1,10 +1,11 @@
 "use client"
+import { makePutRequest } from '@/lib/apiRequest';
 import { getData } from '@/lib/getData';
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast';
 
 export default  function OrderDetails({ params }) {
   const { id } = params;
-  console.log(id, "order details for seller")
   const [orderStatus, setOrderStatus] = useState('Pending')
   const [sellerNote, setSellerNote] = useState({})
   const [order, setOrder] = useState([]);
@@ -33,9 +34,13 @@ export default  function OrderDetails({ params }) {
 
 
 
-  const handleApprove = (id) => {
+  const handleApprove = async () => {
     console.log(id,"id to approve")
-    setOrderStatus('Approved')
+    const  res = await makePutRequest(`/api/orders/${id}`)
+    setTimeout(() => {
+      toast.success("order is Approved Successfully")
+    }, 5000)
+    // setOrderStatus('Approved')
     // Add logic to update order status in the backend
   }
 
@@ -94,7 +99,7 @@ export default  function OrderDetails({ params }) {
               </tr>
             </thead>
             <tbody>
-              {order.items.map((item, index) => (
+              {order.items && order.items.map((item, index) => (
                 <tr key={index}>
                   <td className="py-2">{item.productName}</td>
                   <td className="text-right">{item.quantity}</td>
@@ -104,7 +109,7 @@ export default  function OrderDetails({ params }) {
             <tfoot>
               <tr className="border-t border-white border-opacity-20 font-semibold">
                 <td className="py-2">Total</td>
-                <td className="text-right">${(order.salesTotal).toFixed(2)}</td>
+                <td className="text-right">${(order.salesTotal)}</td>
               </tr>
             </tfoot>
           </table>
@@ -128,20 +133,12 @@ export default  function OrderDetails({ params }) {
           </div>
         </div>
 
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-2">Seller Notes</h3>
-          <textarea
-            className="w-full px-3 py-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
-            rows={3}
-            placeholder="Add a note about this order..."
-            value={sellerNote}
-            onChange={(e) => setSellerNote(e.target.value)}
-          ></textarea>
-        </div>
+       
 
         <div className="flex justify-between items-center">
           <button
-            onClick={() => handleApprove(order.id)}
+            disabled={order.orderStatus === 'DELIVERED'}
+            onClick={handleApprove}
             className="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-purple-900"
           >
             Approve Order
@@ -152,9 +149,7 @@ export default  function OrderDetails({ params }) {
           >
             Reject Order
           </button>
-          <button className="bg-teal-500 text-white py-2 px-4 rounded-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-purple-900">
-            Contact Buyer
-          </button>
+          
         </div>
       </div>
     </div>

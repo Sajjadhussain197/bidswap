@@ -1,8 +1,8 @@
 "use client"
+import { makePutRequest } from '@/lib/apiRequest';
 import { useState, useEffect } from 'react';
 
 const BidListings = ({ bid }) => {
-  console.log(bid.bids,"bid data")
   const [pendingBids, setPendingBids] = useState([]);
   const [approvedBids, setApprovedBids] = useState([]);
   const [pendingLimit, setPendingLimit] = useState(5);
@@ -25,6 +25,7 @@ const BidListings = ({ bid }) => {
             bidder: bid.user.name,
             time:new Date(bid.expiresAt).toLocaleDateString(),
             amount: bid.amount,
+            status:bid.status,
             date: new Date(bid.createdAt).toLocaleDateString(),
           });
         } else {
@@ -32,6 +33,7 @@ const BidListings = ({ bid }) => {
             id: bid.id,
             bidder: bid.user.name,
             amount: bid.amount,
+            status:bid.status,
             date: new Date(bid.createdAt).toLocaleDateString(),
           });
         }
@@ -64,12 +66,32 @@ const BidListings = ({ bid }) => {
       </div>
     );
   };
+  // function redirect() {
+  //   router.push("/dashboard/dashboard/bids");
+  // }
+  const handleApprove = (id) => {
+    console.log(id)
+    fetch(`/api/bids/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ status: 'APPROVED' }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data);
+      window.location.reload();
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
 
-  const handleApprove = (bid) => {
-    // Approve logic here
+    // makePutRequest(`api/bids/${id}`,redirect)
   };
 
   const handleReject = (bid) => {
+    console.log(pendingBids)
     // Reject logic here
   };
 
@@ -79,7 +101,7 @@ const BidListings = ({ bid }) => {
 
       {/* Pending Bids Section */}
       <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-lg overflow-hidden shadow-lg p-6 mb-6">
-        <h2 className="text-2xl font-semibold mb-4">Pending Bids</h2>
+        <h2 className="text-2xl font-semibold mb-4">Active Bids </h2>
         <div className="flex justify-between items-center mb-4">
           <div>
             <label htmlFor="pendingLimit" className="mr-2">Show:</label>
@@ -118,12 +140,14 @@ const BidListings = ({ bid }) => {
                   <td className="text-right">${bid.amount}</td>
                   <td className="text-right">{bid.date}</td>
                   <td className="text-right">{bid.time}</td>
+                  <td className="text-right">{bid.status}</td>
                   <td className="text-right py-2">
-                    <button
-                      onClick={() => handleApprove(bid)}
+                    <button 
+                    disabled={bid.status === "APPROVED"}
+                      onClick={() => handleApprove(bid.id)}
                       className="bg-transparent border border-green-500 text-green-500 px-3 py-1 rounded-md mr-2 hover:bg-green-500 hover:text-white transition-colors duration-300"
                     >
-                      Approve
+                      {bid.status === "APPROVED" ? "APPROVED": "Approve"}
                     </button>
                     <button
                       onClick={() => handleReject(bid)}

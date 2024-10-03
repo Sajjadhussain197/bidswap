@@ -25,6 +25,7 @@ export async function GET(req, {params}) {
               amount: true,
               createdAt: true,
               expiresAt: true,
+              status: true, // Include the status field
               user: {
                 select: {
                   id: true,
@@ -41,11 +42,35 @@ export async function GET(req, {params}) {
       if (!productsWithBids.length) {
         return res.status(404).json({ message: 'No products found for this seller' });
       }
-
+      
       return NextResponse.json(productsWithBids);
 
     } catch (error) {
       console.error('Error fetching bids:', error);
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
+export async function PUT(req, {params}) {
+    const bidId = params.id;
+    console.log(bidId, "params TO update bid")
+
+    try {
+      // Update the bid status to approved
+      const updatedBid = await db.bid.update({
+        where: { id: bidId },
+        data: { status: 'APPROVED' },
+      });
+
+      // If no bid is found
+      if (!updatedBid) {
+        return res.status(404).json({ message: 'Bid not found' });
+      }
+
+      return NextResponse.json(updatedBid);
+
+    } catch (error) {
+      console.error('Error updating bid:', error);
       return res.status(500).json({ message: 'Internal Server Error' });
     }
 }

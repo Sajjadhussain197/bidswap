@@ -215,6 +215,7 @@ model ServiceType {
   products Product[] // This establishes the relation back to Product
 }
 
+
 model Bid {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   productId String   @db.ObjectId
@@ -223,10 +224,12 @@ model Bid {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   expiresAt DateTime
-   bidders        Bidder[]
-  product   Product  @relation("ProductBids", fields: [productId], references: [id], onDelete: Cascade) // Specify relation name here
+  status    String   @default("pending") // Tracks bid status (pending, approved, rejected)
+  bidders   Bidder[]
+  product   Product  @relation("ProductBids", fields: [productId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
 model Bidder {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   bidId     String?   @db.ObjectId // Reference to the main Bid

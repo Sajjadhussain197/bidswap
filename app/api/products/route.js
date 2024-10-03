@@ -120,8 +120,9 @@ export async function POST(request) {
 
       console.log('Created new bid:', newBid);
      
-      return NextResponse.json({ product: newProduct, bid: newBid , barter:newBarter});
-    }else if(serviceType && serviceType.name === "BARTING"){
+      return NextResponse.json({ product: newProduct, bid: newBid});
+    }
+    else if(serviceType && serviceType.name === "BARTING"){
       console.log("we are in barting ")
       const newBarter = await db.Barter.create({
         data: {
