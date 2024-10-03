@@ -33,7 +33,7 @@ export default function CategoryList({category}) {
 
     }
   } 
-  console.log(updatedProducts,"updated category data")
+  // console.log(updatedProducts,"updated category data")
   return (
     <div className='bg-white border border-gray-300 rounded-lg
     dark:bg-gray-700 dark:border-gray-700 text-slate-800 overflow-hidden'>

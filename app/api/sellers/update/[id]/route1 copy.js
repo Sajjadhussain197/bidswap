@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import React from 'react'
 import db from '../../../lib/db';
+console.log("id")
 export async function POST(request) {
 try {
     const {name,email,contact,category,address,imageUrl,slug} = await request.json();
@@ -40,32 +41,43 @@ try {
     },{status:500})
 }
 }
-export async function GET({ params }) {
-  console.log(params.id, "backend id")
-    // try {
-    //   if (params.id) {
-    //     const seller = await db.user.findUnique({
-    //       where: { id: params.id },
-    //     });
-    //     if (!seller) {
-    //       return NextResponse.json(
-    //         { message: 'Seller not found' },
-    //         { status: 404 }
-    //       );
-    //     }
-    //     return NextResponse.json(seller);
-    //   } else {
-    //     const sellers = await db.user.findMany();
-    //     return NextResponse.json(sellers);
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    //   return NextResponse.json(
-    //     { message: 'Unable to fetch Sellers', error },
-    //     { status: 500 }
-    //   );
-    // }
+export async function GET(request, { params }) {
+  console.log(params.id, "backend id");
+  await new Promise(resolve => setTimeout(resolve, 2000)); // Simulating a 2-second delay
+
+  try {
+    // If an ID is provided, fetch the specific seller
+    if (params.id) {
+      const seller = await db.user.findUnique({
+        where: { id: params.id },
+      });
+
+      // If seller not found, return a 404 response
+      if (!seller) {
+        return NextResponse.json(
+          { message: 'Seller not found' },
+          { status: 404 }
+        );
+      }
+
+      // Return the found seller
+      return NextResponse.json(seller);
+    }
+
+    // If no ID is provided, fetch all sellers
+    const sellers = await db.user.findMany();
+    return NextResponse.json(sellers);
+
+  } catch (error) {
+    console.error('Error fetching seller:', error);
+
+    // Return a 500 status with error message
+    return NextResponse.json(
+      { message: 'Unable to fetch Sellers', error: error.message },
+      { status: 500 }
+    );
   }
+}
   export async function PUT({ params }) {
     try {
       const { id } = params;

@@ -45,6 +45,7 @@ export default function Sidebar({ showSidebar }) {
     { title: "Settings", icon: Settings2, href: '/dashboard/settings' },
     { title: "Community", icon: Users2, href: '/dashboard/community' },
     { title: "Online Stores", icon: StoreIcon, href: '/dashboard/onlinestores' },
+    { title: "Markup", icon: DollarSign, href: '/dashboard/markup' },
     { title: "Wallet", icon: DollarSign, href: '/dashboard/wallet' },
   ];
 
@@ -60,7 +61,8 @@ export default function Sidebar({ showSidebar }) {
     sideBarLinks = [
       { title: "Customers", icon: Users2, href: '/dashboard/customers' },
       { title: "Markets", icon: ShoppingBasketIcon, href: '/dashboard/markets' },
-      // { title: "Orders", icon: ListOrdered, href: '/dashboard/orders' },
+      { title: "Orders", icon: ListOrdered, href: '/dashboard/orders' },
+      { title: "Bids", icon: ListOrdered, href: '/dashboard/bids' },
       { title: "Sales", icon: ListOrdered, href: '/dashboard/sales' },
       { title: "Settings", icon: Settings2, href: '/dashboard/settings' },
       { title: "Community", icon: Users2, href: '/dashboard/community' },

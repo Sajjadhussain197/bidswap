@@ -58,7 +58,7 @@ export const columns = [
           row={row} 
           title="Seller" 
           editEndpoint = {`customers/update/${sellers.id}`}
-          endpoint={`sellers/${sellers.id}`} 
+          endpoint={`sellers/update/${sellers.id}`} 
           />
         )
         

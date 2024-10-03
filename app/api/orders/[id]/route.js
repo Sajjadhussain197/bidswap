@@ -1,6 +1,8 @@
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
 
+
+
 // Handle GET request
 export async function GET(request, { params: { id } }) {
   // Validate ID format

@@ -25,15 +25,12 @@ const UpdateCustomerForm = ({ heading, href, linktitle, updateData = {} }) => {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    defaultValues: {
-      name: updateData?.name || "", // Set default value for seller name
-      email: updateData?.email || "", // Set default value for seller email
-      ...updateData, // Spread other properties from updateData
-    },
+   
+    defaultValues:{ ...updateData,}
   });
-console.log(updateData, "update data")
+// Object.entries(updateData).map(([key, value]) => console.log(`${key}: ${value}`, "update data"))
   function redirect() {
-    router.push("/dashboard/sellers");
+    router.push("/dashboard/customers");
   }
 
   const handleImageChange = (e) => {
@@ -70,21 +67,21 @@ console.log(updateData, "update data")
 
   const onSubmit = (data) => {
     // Ensure URL is set
-    if (!url && !intialImage) {
-      toast.error("Please upload an image before submitting.");
-      return;
-    }
+    // if (!url && !intialImage) {
+    //   toast.error("Please upload an image before submitting.");
+    //   return;
+    // }
 
     // If no new image is uploaded, use the initial image URL
-    const imageUrl = url || intialImage;
+    // const imageUrl = url || intialImage;
 
     const slug = generateSlug(data.name);
     data.slug = slug;
-    data.image = imageUrl;
+    // data.image = imageUrl;
 
     console.log("Data to be submitted:", data); // Debugging
 
-    makePutRequest(`api/sellers/${id}`, data, "seller", redirect, reset)
+    makePutRequest(`api/sellers/update/${id}`, data, "seller", redirect, reset)
       .then(() => {
         toast.success("Seller updated");
         reset();
@@ -157,6 +154,7 @@ console.log(updateData, "update data")
                         >
                           Seller Name
                         </label>
+                        
                         <input
                           type="text"
                           name="name"
@@ -189,7 +187,7 @@ console.log(updateData, "update data")
                         )}
                       </div>
 
-                      <div className="mb-4">
+                      {/* <div className="mb-4">
                         <label
                           htmlFor="image"
                           className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -209,7 +207,7 @@ console.log(updateData, "update data")
                         >
                           Upload Image
                         </button>
-                      </div>
+                      </div> */}
 
                       {url && (
                         <img

@@ -1,10 +1,14 @@
 "use client"
 import generateSlug from '@/lib/generateSlug';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image'; // Import Next.js Image component
 import Link from 'next/link'; // Import Next.js Link component
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 const OrderCard = ({ order }) => {
+
+  const {data:session} = useSession();
+  const Role = session.user.role;
   const router = useRouter();
   const calculatedAmount = order.sales.reduce((acc, sale) => acc + sale.total, 0);
   const totalCalculateAmount = calculatedAmount + parseFloat(order.shippingCost);
@@ -17,7 +21,13 @@ const OrderCard = ({ order }) => {
   const totalAmount = (parseFloat(order.totalAmount) || 0) + shippingCost; // Adjust as necessary for total amount calculation
   const [viewOrderDetails, setViewOrderDetails] = useState(false);
   const handleViewOrderDetails = () => {
-    router.push(`/dashboard/orders/${order.id}/invoice`);
+    if(Role === "SELLER"){
+      
+      router.push(`/dashboard/orders/${order.id}`);
+    }else{
+      router.push(`/dashboard/orders/${order.id}/invoice`);
+
+    }
     console.log("order details");
   }
   return (

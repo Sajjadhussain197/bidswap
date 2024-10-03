@@ -3,18 +3,15 @@ import { NextResponse } from "next/server";
 
 
 
-export async function GET(request, { params: { id } }) {
+export async function GET(request) {
   try {
-    // Fetch category with related sellers
-    const seller = await db.seller.findUnique({
+    console.log("sellers")
+    const seller = await db.user.findMany({
       orderBy: {
         createdAt: "desc",
       },
        where: {
         role: "SELLER",
-         },
-         include: {
-          seller :true, 
          }
     });
     

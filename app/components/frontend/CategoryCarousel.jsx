@@ -12,7 +12,7 @@ import dynamic from 'next/dynamic';
 const Product = dynamic(() => import("./Product"), { ssr: false });
 console.log()
 export default function CategoryCarousel({ products }) {
-  console.log(products,"products end")
+  
   const responsive = {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },

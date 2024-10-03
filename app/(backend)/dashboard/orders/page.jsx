@@ -5,23 +5,33 @@ import { getServerSession } from 'next-auth';
 import React from 'react'
 
 export default async function Order() {
-  // Fetch orders data
-  const orders = await getData("orders");
-  // console.log(orders)
+  
   const session = await getServerSession(authOptions);
   if (!session) return;
   const userId = session?.user?.id;
   const Role = session?.user?.role;
-  console.log(session);
-  if (!orders || !Array.isArray(orders) || orders.length === 0) {
-    return (
-      <p>No Orders yet</p>
-    );
-  }
-  const userOrders = orders.filter((order) => order.userId === userId);
-  
-  // console.log('Orders:', userOrders);
+  let orders;
+  let userOrders;
+  if(Role == "SELLER"){
+    console.log("role and id ", Role, userId)
+     orders = await getData(`orders/seller/${userId}`);
+     console.log(orders, "seller orders data")
+  } else{
+ // Fetch orders data
+  orders = await getData("orders");
+ // console.log(orders)
+ console.log(session);
+ if (!orders || !Array.isArray(orders) || orders.length === 0) {
+   return (
+     <p>No Orders yet</p>
+   );
+ }
+  userOrders = orders.filter((order) => order.userId === userId);
+ 
+//  console.log('Orders:', userOrders);
 
+  }
+ 
   return (
     <div>
       <section className="py-12 bg-white sm:py-16 lg:py-20">
@@ -47,12 +57,19 @@ export default async function Order() {
               </>
             ):(
               <>
-                
-              {userOrders.length > 0 ? (
-                userOrders.map((order, i) => <OrderCard key={i} order={order} />)
-              ) : (
-                <p>No orders found for this user.</p>
-              )}
+                {Role == 'SELLER' ? (
+                  orders.length > 0 ? (
+                    orders.map((order, i) => <OrderCard key={i} order={order} />)
+                  ) : (
+                    <p>No orders found for this user.</p>
+                  )
+                ) : (
+                  userOrders.length > 0 ? (
+                    userOrders.map((order, i) => <OrderCard key={i} order={order} />)
+                  ) : (
+                    <p>No orders found for this user.</p>
+                  )
+                )}
               </>
             )}
             </ul>

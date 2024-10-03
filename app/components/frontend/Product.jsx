@@ -14,6 +14,9 @@ export default function Product({ product }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+
+  const currentDate = new Date();
+
   function handleAddToCart() {
     dispatch(addToCart(product));
     toast.success("Item added Successfully");
@@ -69,10 +72,9 @@ export default function Product({ product }) {
       </Link>
 
       {product.serviceType === "BIDDING" ? 
-      (
-        <div className="px-4">
-          <Link href={`/products/${product.id}`} className='flex gap-2 justify-between items-center'>
-            <h2 className="text-center text-slate-800 my-2 dark:text-slate-200 font-semibold whitespace-nowrap">
+      (<div className="px-4">
+            <Link href={`/products/${product.id}`} className='flex gap-2 justify-between items-center'>
+              <h2 className="text-center text-slate-800 my-2 dark:text-slate-200 font-semibold whitespace-nowrap">
               {product.name}
             </h2>
             <p className='whitespace-nowrap'>Rs {product.saleprice}</p>

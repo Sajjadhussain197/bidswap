@@ -116,9 +116,9 @@ export default async function Home({ searchParams }) {
   else {
     categories = await getData("categories");
     // console.log(categories)
-    if(categories){
-      console.log(categories, "categories with products, simple")
-    }
+    // if(categories){
+    //   console.log(categories, "categories with products, simple")
+    // }
   }
   const session = await getServerSession(authOptions);
   console.log(session?.user);
