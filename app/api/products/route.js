@@ -102,7 +102,7 @@ export async function POST(request) {
 
     if (serviceType && serviceType.name === "BIDDING") {
       // Set a default bid amount, e.g., equal to the product price
-      const defaultBidAmount = parsedProductPrice; // Use the product price as the bid amount
+      const defaultBidAmount = parsedSalePrice; // Use the product price as the bid amount
 
       // Calculate expiration date for the bid
       const expiresAt = new Date();

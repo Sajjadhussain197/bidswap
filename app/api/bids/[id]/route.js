@@ -3,6 +3,47 @@ import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from 'next-auth';
 import db from "@/lib/db";
 import { NextResponse } from 'next/server';
+import nodemailer from 'nodemailer';
+
+
+async function sendBidApprovalEmail(bidderEmail) {
+  // Create a transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+    service: 'gmail', // You can use any email service
+    auth: {
+      user: process.env.EMAIL_FROM, // Sender's email
+      pass: process.env.APP_PASSWORD // App-specific password
+    },
+  });
+
+  // Setup email data
+  let mailOptions = {
+    from: process.env.EMAIL_FROM, // Sender's email
+    to: bidderEmail, // Recipient email
+    subject: 'Your Bid Has Been Approved!', // Subject line
+    html: `
+      <h1>Congratulations!</h1>
+      <p>Your bid has been approved.</p>
+      <p>Click the button below to proceed to checkout:</p>
+      <a href="http://localhost:3000/checkout" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px;">Checkout</a>
+    `,
+  };
+
+  // Send the email
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log('Error sending email:', error);
+    } else {
+      console.log('Email sent:', info.response);
+    }
+  });
+}
+
+
+
+
+
+
 export async function GET(req, {params}) {
     const userId = params.id;
     console.log(userId, "params ")
@@ -61,13 +102,30 @@ export async function PUT(req, {params}) {
         where: { id: bidId },
         data: { status: 'APPROVED' },
       });
+      const bidder = await db.bidder.findFirst({
+        where: {
+          bidId: bidId, // Find the bidder using the bidId
+        },
+        include: {
+          user: {
+            select: {
+              email: true, // Select the email of the user
+            },
+          },
+        },
+      });
+      const bidderEmail = bidder?.user?.email || null;
+      if(bidderEmail){
+        sendBidApprovalEmail(bidderEmail)
+      }
 
-      // If no bid is found
+      // console.log(bidderEmail, "bidder email")
+
       if (!updatedBid) {
         return res.status(404).json({ message: 'Bid not found' });
       }
 
-      return NextResponse.json(updatedBid);
+      return NextResponse.json(bidder);
 
     } catch (error) {
       console.error('Error updating bid:', error);

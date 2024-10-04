@@ -24,7 +24,7 @@ export default function NewCategory({ initialData = {}, isUpdate = false }) {
   
   function redirect() {
     router.push("/dashboard/categories/xx");
-  }
+  }redirect,
   async function onSubmit(data) {
     console.log(data);
     if (isUpdate) {

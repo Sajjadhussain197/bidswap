@@ -52,7 +52,7 @@ export async function GET(request, { params }) {
         if (products.length === 0) {
           return NextResponse.json({ message: 'No products found for the given service type' }, { status: 404 });
         }
-
+        console.log(products,"with service type")
         return NextResponse.json(products);
       } else {
         return NextResponse.json({ message: 'Service type not found' }, { status: 404 });

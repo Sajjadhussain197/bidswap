@@ -48,6 +48,7 @@ export async function POST(request) {
 
         const bidId = bid.id; // Get the bid ID
         const sellerId = product.userId; // Assuming the product has a userId representing the seller
+        console.log(bidId, bid, "bid data to to apply")
 
         const newBid = await db.bidder.create({
             data: {

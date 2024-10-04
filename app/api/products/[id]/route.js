@@ -7,14 +7,14 @@ import { ObjectId } from 'mongodb'; // Import ObjectId for validation
 export async function GET(request, { params }) {
   const { id } = params; // Extract the product ID from params (if applicable)
   const url = new URL(request.url);
-  console.log(url,"url from get product")
+  console.log(url, "url from get product")
   const serviceTypeQuery = url.searchParams.get('serviceType'); // Extract serviceType query parameter
-  console.log(serviceTypeQuery,"service type from product")
+  console.log(serviceTypeQuery, "service type from product")
   const searchText = url.searchParams.get('query'); // Extract open search text (e.g., 'chairs', 'fancy chair')
-  console.log(searchText,"search text type from product")
+  console.log(searchText, "search text type from product")
   const minprice = url.searchParams.get('minprice'); // Extract open search text (e.g., 'chairs', 'fancy chair')
   const maxprice = url.searchParams.get('maxprice'); // Extract open search text (e.g., 'chairs', 'fancy chair')
-  console.log(minprice,"min",maxprice,"max")
+  console.log(minprice, "min", maxprice, "max")
 
   try {
     // Check if `id` is provided and if it's a valid ObjectId
@@ -43,14 +43,20 @@ export async function GET(request, { params }) {
           name: { equals: serviceTypeQuery, mode: 'insensitive' } // Find service type by name
         }
       });
-        console.log("fetched type",serviceType,searchText)
+      console.log("fetched type", serviceType, searchText)
       if (serviceType) {
         // Fetch products by service type ID
         const products = await db.product.findMany({
           where: { serviceTypeId: serviceType.id },
           include: {
             category: true,
-            bids: true,
+            bids: {
+              where: {
+                expiresAt: {
+                  gte: new Date(), // Only include bids where `expiresAt` is greater than or equal to the current date
+                },
+              },
+            },
             serviceType: true,
             barters: {
               select: {
@@ -66,7 +72,7 @@ export async function GET(request, { params }) {
 
         return NextResponse.json(products);
       }
-       else {
+      else {
         return NextResponse.json({ message: 'Service type not found' }, { status: 404 });
       }
 
@@ -98,11 +104,11 @@ export async function GET(request, { params }) {
 
       return NextResponse.json(products);
 
-    }else if (minprice || maxprice) {
+    } else if (minprice || maxprice) {
       // Convert prices to numbers for comparison
       const parsedMinPrice = minprice ? parseFloat(minprice) : 0;
       const parsedMaxPrice = maxprice ? parseFloat(maxprice) : Infinity;
-  
+
       // Fetch products within the price range
       const products = await db.product.findMany({
         where: {
@@ -117,16 +123,16 @@ export async function GET(request, { params }) {
           serviceType: true
         }
       });
-  
+
       if (products.length === 0) {
         return NextResponse.json({ message: 'No products found within the price range' }, { status: 404 });
       }
-  
+
       return NextResponse.json(products);
-  
-    // Search by serviceType
-    } 
-     else {
+
+      // Search by serviceType
+    }
+    else {
       // Fetch all products if no query is provided
       const products = await db.product.findMany({
         include: {
@@ -155,7 +161,7 @@ export async function GET(request, { params }) {
 //     const product = await db.product.findUnique({
 //       where: { id }
 //     });
-    
+
 //     if (!product) {
 //       return NextResponse.json(
 //         { message: 'Product not found' },
@@ -213,8 +219,8 @@ export async function DELETE(request, { params: { id } }) {
 export async function PUT(request, { params: { id } }) {
   console.log('PUT request received with ID:', id);
   try {
-    const { name, productprice , image, isActive } = await request.json();
-    console.log('Data received:', { name, productprice , image, isActive });
+    const { name, productprice, image, isActive } = await request.json();
+    console.log('Data received:', { name, productprice, image, isActive });
 
     const existingProduct = await db.product.findUnique({
       where: { id },
@@ -228,7 +234,7 @@ export async function PUT(request, { params: { id } }) {
 
     const updatedProduct = await db.product.update({
       where: { id },
-      data: { name, productprice , image, isActive },
+      data: { name, productprice, image, isActive },
     });
 
     console.log('Product updated:', updatedProduct);

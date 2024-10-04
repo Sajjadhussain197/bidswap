@@ -178,7 +178,50 @@ export default function ProductPart({ heading, href, linktitle }) {
                         />
                         {errors.name && <p className="text-red-600">Product name is required</p>}
                       </div>
-
+                      <div className="col-span-2 sm:col-span-1">
+                      <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                        Select Service Type
+                      </label>
+                      <select
+                          id="service"
+                          name="service"
+                          {...register("serviceTypeId")} // Register this field as serviceTypeId
+                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                          onChange={(e) => {
+                            const selectedserviceTypeId = e.target.value;
+                            const selectedService = services.find(cat => cat.id === selectedserviceTypeId);
+                            setValue("categoryId", selectedserviceTypeId); // Save categoryId
+                            setValue("prodcategory", selectedService?.name); // Save prodcategory name
+                            if (selectedService?.name === "BARTING") {
+                              document.getElementById("barging-input").style.display = "block";
+                            } else {
+                              document.getElementById("barging-input").style.display = "none";
+                            }
+                          }}
+                        >
+                          <option value="" disabled>
+                            Select Service 
+                          </option>
+                          {services.map((item) => (
+                            <option key={item.id} value={item.id}>{item.name}</option> // The user sees item.name, but the value is item.id
+                          ))}
+                        </select>
+                      {services.some(service => service.name === "BARTING") && (
+                        <div id="barging-input" style={{ display: "none" }}>
+                          <label htmlFor="bargingInput" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                            Exchang Product
+                          </label>
+                          <input
+                            type="text"
+                            id="bargingInput"
+                            name="bartingInput"
+                            {...register("bartingInput")}
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                            placeholder="Enter product name to exchange"
+                          />
+                        </div>
+                      )}
+                    </div>
 
                       <div className="col-span-2 sm:col-span-1">
                         <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -353,50 +396,7 @@ export default function ProductPart({ heading, href, linktitle }) {
                       {url && <image src={url} alt="Uploaded" className="mb-4 w-10 h-10" />}
 
                     </div>
-                    <div className="col-span-2 sm:col-span-1">
-                      <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                        Select Service Type
-                      </label>
-                      <select
-                          id="service"
-                          name="service"
-                          {...register("serviceTypeId")} // Register this field as serviceTypeId
-                          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                          onChange={(e) => {
-                            const selectedserviceTypeId = e.target.value;
-                            const selectedService = services.find(cat => cat.id === selectedserviceTypeId);
-                            setValue("categoryId", selectedserviceTypeId); // Save categoryId
-                            setValue("prodcategory", selectedService?.name); // Save prodcategory name
-                            if (selectedService?.name === "BARTING") {
-                              document.getElementById("barging-input").style.display = "block";
-                            } else {
-                              document.getElementById("barging-input").style.display = "none";
-                            }
-                          }}
-                        >
-                          <option value="" disabled>
-                            Select Service 
-                          </option>
-                          {services.map((item) => (
-                            <option key={item.id} value={item.id}>{item.name}</option> // The user sees item.name, but the value is item.id
-                          ))}
-                        </select>
-                      {services.some(service => service.name === "BARTING") && (
-                        <div id="barging-input" style={{ display: "none" }}>
-                          <label htmlFor="bargingInput" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-                            Exchang Product
-                          </label>
-                          <input
-                            type="text"
-                            id="bargingInput"
-                            name="bartingInput"
-                            {...register("bartingInput")}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                            placeholder="Enter product name to exchange"
-                          />
-                        </div>
-                      )}
-                    </div>
+                 
 
                     <button onClick={() => toast.success("New Product Added")} className="relative shadow inline-flex items-center justify-center p-0.5 mb-2 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-400 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
                       <span className="relative px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
