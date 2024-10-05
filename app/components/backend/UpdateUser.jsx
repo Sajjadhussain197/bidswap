@@ -10,36 +10,43 @@ export default function UpdateUser() {
     const [dateOfBirth, setDateOfBirth] = useState();
     const [name, setName] = useState();
     const [address, setAddress] = useState();
+    const [password, setPassword] = useState();
     const {data : session} = useSession()
-     const userId = session.user.id;
+    const id  = session?.user?.id;
+     const userId = id
 
     
   async function onSubmitPassword() {
-    console.log(email);
-    try {
-    //   setLoading(true);
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-      const response = await fetch(`${baseUrl}/api/users/update-password`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-      if (response.ok) {
-          console.log(response,"hereis response")
-          setNotify("Password reset link is sent to you on give email")
-        // setShowNotification(true);
-        toast.success("Password reset link sent Successfully", { duration: 5000 });
-      } else {
-        // setLoading(false);
-        toast.error("Something Went wrong");
+    if(session.user.email === email){
+      console.log(session.user.email ,"are equal", email)
+      try {
+        // setLoading(true);
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+        const response = await fetch(`${baseUrl}/api/users/update-password`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id,password }),
+        });
+        if (response.ok) {
+            console.log(response,"hereis response")
+            setNotify("Password updated successfully")
+          // setShowNotification(true);
+          toast.success("Password updated successfully", { duration: 5000 });
+        } else {
+          // setLoading(false);
+          toast.error("Something Went wrong");
+        }
+      } catch (error) {
+      //   setLoading(false);
+        console.error("Network Error:", error);
+        toast.error("Its seems something is wrong with your Network");
       }
-    } catch (error) {
-    //   setLoading(false);
-      console.error("Network Error:", error);
-      toast.error("Its seems something is wrong with your Network");
+    }else{
+      toast.error("provide the user email");
     }
+   
   }
   async function updateUserProfile() {
     
@@ -94,12 +101,23 @@ export default function UpdateUser() {
                     )}
                   </div>
                 </div>
+                <div className="mb-4">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-1">New Password</label>
+                  <input
+                    type="text"
+                    id="name"
+                    className="w-full px-3 py-2 bg-white bg-opacity-20 border border-white border-opacity-30 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    placeholder="Enter your name"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
             </div>
             <div className="p-4 bg-white bg-opacity-5">
               <button
               onClick={onSubmitPassword}
                className="w-full bg-teal-500 text-white py-2 px-4 rounded-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 focus:ring-offset-purple-900">
-                Send Reset Link
+                Update Password
               </button>
             </div>
             <div className="p-10 text-green-400 font-bold">{notify}</div>
@@ -155,7 +173,7 @@ export default function UpdateUser() {
           </div>
   
           {/* Email Verification Card */}
-          <div className="w-full md:w-1/3 bg-white bg-opacity-10 backdrop-blur-lg rounded-lg overflow-hidden shadow-lg">
+          {/* <div className="w-full md:w-1/3 bg-white bg-opacity-10 backdrop-blur-lg rounded-lg overflow-hidden shadow-lg">
             <div className="p-4 border-b border-white border-opacity-20">
               <h2 className="text-xl font-semibold text-white">Email Verification</h2>
               <p className="text-sm text-gray-300">Verify your email address</p>
@@ -178,7 +196,7 @@ export default function UpdateUser() {
                 Verify Email
               </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     )

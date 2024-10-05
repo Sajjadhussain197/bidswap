@@ -51,7 +51,7 @@ export default async function Home({ searchParams }) {
     const queryParams = new URLSearchParams({ serviceType, query }).toString();
       console.log(queryParams, "slug of query")
       const categoryData = await getData(`products/product/?${queryParams}`);
-      console.log(categoryData, "to find amount")
+      // console.log(categoryData, "to find amount")
       const categoryMap = {};
 
       if (Array.isArray(categoryData)) {
@@ -80,15 +80,11 @@ export default async function Home({ searchParams }) {
           const expiresAt = Array.isArray(product.bids) && product.bids.length > 0 
             ? product.bids[0].expiresAt // Assuming first bid contains the expiration
             : null;
-          const bidamount = Array.isArray(product.bids) && product.bids.length > 0 
-            ? product.bids[0].amount // Assuming first bid contains the amount
-            : null;
           const productExchange = Array.isArray(product.barters) && product.barters.length > 0 
           ? product.barters[0].prductExchange // Assuming first bid contains the expiration
           : null;
           categoryMap[categoryId].expiresAt = expiresAt;
           categoryMap[categoryId].productExchange = productExchange;
-          categoryMap[categoryId].bidamount = bidamount;
       
           // Push the product into the corresponding category's products array
           categoryMap[categoryId].products.push({
@@ -104,7 +100,7 @@ export default async function Home({ searchParams }) {
   
       // Convert the category map to an array
       categories = Object.values(categoryMap);
-      // console.log(categories, "search datas");
+      console.log(categories, "search datas");
     }
     else if(minprice || maxprice){
       

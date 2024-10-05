@@ -40,15 +40,41 @@ export async function GET(request, { params }) {
 
       if (serviceType) {
         // Fetch products by service type ID
+        // const products = await db.product.findMany({
+        //   where: { serviceTypeId: serviceType.id },
+        //   include: {
+        //     category: true,
+        //     bids: true,
+        //     serviceType: true
+        //   }
+        // });
         const products = await db.product.findMany({
-          where: { serviceTypeId: serviceType.id },
+          where: {
+            serviceTypeId: serviceType.id,
+            // Only fetch products that have at least one bid with expiresAt > current time
+            bids: {
+              some: {
+                expiresAt: {
+                  gt: new Date(), // Only include bids that haven't expired
+                },
+              },
+            },
+          },
           include: {
-            category: true,
-            bids: true,
-            serviceType: true
-          }
+            category: true, // Include related category if the product is valid
+            serviceType: true, // Include related serviceType if the product is valid
+            bids: {
+              where: {
+                expiresAt: {
+                  gt: new Date(), // Only include non-expired bids in the response
+                },
+              },
+            },
+          },
         });
-
+        
+        
+        
         if (products.length === 0) {
           return NextResponse.json({ message: 'No products found for the given service type' }, { status: 404 });
         }
