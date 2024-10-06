@@ -4,19 +4,20 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image'; // Import Next.js Image component
 import Link from 'next/link'; // Import Next.js Link component
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 const OrderCard = ({ order }) => {
 
   const {data:session} = useSession();
   const Role = session.user.role;
+  const id = session.user.id;
   const router = useRouter();
   const calculatedAmount = order.sales.reduce((acc, sale) => acc + sale.total, 0);
   const totalCalculateAmount = calculatedAmount + parseFloat(order.shippingCost);
   
   // console.log({ ...order, calculatedAmount }, "from card")
   
+  
   const formattedDate = new Date(order.createdAt).toLocaleDateString();
-  // Since orderItems are not part of your order object, we can directly access the other properties
   const shippingCost = order.shippingCost || 0; // Fallback to 0 if undefined
   const totalAmount = (parseFloat(order.totalAmount) || 0) + shippingCost; // Adjust as necessary for total amount calculation
   const [viewOrderDetails, setViewOrderDetails] = useState(false);
@@ -147,6 +148,14 @@ const OrderCard = ({ order }) => {
               >
                 View Invoice
               </Link>
+              {Role === "USER" && (
+                <Link
+                href={`/dashboard/orders/${order.id}/refund`}
+                className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-bold text-gray-900 transition-all duration-200 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 hover:bg-gray-100"
+              >
+                Order Refund
+              </Link>
+              )}
             </div>
           </div>
         </div>

@@ -61,20 +61,28 @@ function ShippingDetailsForm() {
     }
 
     const cardElement = elements.getElement(CardElement);
-    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+    const { error, paymentIntent ,intentId} = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: cardElement,
       },
     });
+    console.log(intentId,"intent")
+    console.log(error,"error")
 
     if (error) {
       console.error('Payment error:', error.message);
       setPaymentStatus('Card Payment Failed');
     } else {
       console.log('Payment successful:', paymentIntent);
-      setPaymentStatus('Card Payment succeeded');
-    }
-  };
+      const updatedData = {
+        ...exitingformData,
+        PaymentMethod,
+        paymentIntentId: paymentIntent.id // Include payment intent ID in form data
+      }
+      
+      dispatch(updatecheckoutFormData(updatedData)); // Update form data with new values
+    
+  }}
   const payWithJazzCash = async () => {
     const { accountNumber, pin, amount } = jazzCashDetails;
   
@@ -90,7 +98,9 @@ function ShippingDetailsForm() {
         amount,
         description: 'Payment for order',
       });
-  
+     
+      
+  console.log(res)
       if (res.status !== 200 || !res.data) {
         console.error('Failed to initiate JazzCash payment');
         return;
@@ -99,33 +109,34 @@ function ShippingDetailsForm() {
       const paymentData = res.data;
   
       // Verify that `endpoint` is correctly set
-      const endpoint = paymentData.endpoint || process.env.JAZZCASH_ENDPOINT;
+      // const endpoint = paymentData.endpoint || process.env.JAZZCASH_ENDPOINT;
   
-      if (!endpoint) {
-        console.error('Payment endpoint is missing');
-        return;
-      }
+      // if (!endpoint) {
+      //   console.error('Payment endpoint is missing');
+      //   return;
+      // }
   
-      console.log('Payment data:', paymentData);
+      console.log('Payment data:', paymentData.message);
+      setPaymentStatus(paymentData.message)
   
       // Create a form dynamically and submit to JazzCash
-      const form = document.createElement('form');
-      form.action = endpoint;
-      form.method = 'POST';
+      // const form = document.createElement('form');
+      // form.action = endpoint;
+      // form.method = 'POST';
   
-      for (const key in paymentData) {
-        if (key !== 'endpoint') {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = key;
-          input.value = paymentData[key];
-          form.appendChild(input);
-        }
-      }
+      // for (const key in paymentData) {
+      //   if (key !== 'endpoint') {
+      //     const input = document.createElement('input');
+      //     input.type = 'hidden';
+      //     input.name = key;
+      //     input.value = paymentData[key];
+      //     form.appendChild(input);
+      //   }
+      // }
   
       // Append the form to the body and submit it
-      document.body.appendChild(form);
-      form.submit();
+      // document.body.appendChild(form);
+      // form.submit();
   
     } catch (error) {
       console.error('Error initiating JazzCash payment:', error);
@@ -215,12 +226,17 @@ function ShippingDetailsForm() {
                 </div>
                 <Circle className="w-5 h-5 ms-3" />
               </label>
-              <CardElement className='py-3 border mt-2 rounded-md w-full'/>
+              {PaymentMethod === "Credit Card" && (
+                <>
+                <CardElement className='py-3 border mt-2 rounded-md w-full'/>
               <div className="mt-5 flex flex-col gap-2 items-end">
                 <button type="button" onClick={payWithCreditCard} className="bg-green-500 h-12 px-5 rounded-md  w-25">
                   Pay Now
                 </button>
               </div>
+                </>
+              )}
+             
               {paymentStatus && <p>{paymentStatus}</p>}
             </li>
           </ul>
@@ -253,7 +269,9 @@ function ShippingDetailsForm() {
               <button type="button" onClick={payWithJazzCash} className="bg-green-500 h-12 px-5 rounded-md w-25">
                 Pay with JazzCash
               </button>
+              {paymentStatus && <p className='text-green-500'>{paymentStatus}</p>}
             </div>
+
           )}
         </div>
       </div>

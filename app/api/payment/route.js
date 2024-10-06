@@ -12,7 +12,8 @@ export async function POST(request) {
       currency: 'usd',
       payment_method_types: ['card']
     });
-    return NextResponse.json({ clientSecret: paymentIntent.client_secret });
+    console.log(paymentIntent,"payment")
+    return NextResponse.json({ clientSecret: paymentIntent.client_secret ,intentId:paymentIntent.id});
   } catch (error) {
     console.error('Error creating payment intent:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });

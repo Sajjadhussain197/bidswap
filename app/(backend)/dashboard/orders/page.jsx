@@ -2,6 +2,7 @@ import OrderCard from '@/app/components/order/OrderCard'
 import { authOptions } from '@/lib/authOptions';
 import { getData } from '@/lib/getData'
 import { getServerSession } from 'next-auth';
+import Link from 'next/link';
 import React from 'react'
 
 export default async function Order() {
@@ -15,7 +16,7 @@ export default async function Order() {
   if(Role == "SELLER"){
     console.log("role and id ", Role, userId)
      orders = await getData(`orders/seller/${userId}`);
-     console.log(orders, "seller orders data")
+    //  console.log(orders, "seller orders data")
   } else{
  // Fetch orders data
   orders = await getData("orders");
@@ -38,7 +39,14 @@ export default async function Order() {
         <div className="px-4 m-auto sm:px-6 lg:px-8 max-w-7xl">
           <div className="max-w-6xl mx-auto">
             <div>
+              <div className="flex justify-between">
               <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Your Orders Details</h1>
+               {Role == "SELLER" &&
+                <Link
+                href={'/dashboard/orders/refund-manager'}
+                className='h-11 w-auto bg-blue-400 rounded-md px-2 py-2'>Order Refund</Link>
+               }
+              </div>
               <p className="mt-2 text-sm font-normal text-gray-600">
                 Check the status of recent and old orders & discover more products
               </p>

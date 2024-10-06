@@ -16,7 +16,9 @@ function generateOrderNumber(length) {
 
 export async function POST(request) {
   try {
-    const { checkoutFormData, orderItems } = await request.json();
+    const body =    await request.json();
+    console.log(body,"body")
+    const { checkoutFormData, orderItems } = body;
     const {
       City,
       Country,
@@ -30,7 +32,7 @@ export async function POST(request) {
       StreetAddress,
       userId,
     } = checkoutFormData;
-   console.log(checkoutFormData,orderItems);
+   console.log(checkoutFormData,orderItems, "data");
 
     // Use Prisma transaction to ensure both queries are successful or rolled back
     const result = await db.$transaction(async (prisma) => {

@@ -47,7 +47,7 @@ export async function POST(request) {
     postData.pp_SecureHash = secureHash;
 
     // Send the request to JazzCash server directly from the backend
-    const endpoint = process.env.JAZZCASH_ENDPOINT;
+    const endpoint = "https://sandbox.jazzcash.com.pk/ApplicationAPI/API/Payment/DoTransaction"
 
     const formData = new URLSearchParams(postData);
 
