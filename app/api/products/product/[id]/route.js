@@ -39,6 +39,7 @@ export async function GET(request, { params }) {
       });
 
       if (serviceType) {
+        console.log("hello from service")
         // Fetch products by service type ID
         // const products = await db.product.findMany({
         //   where: { serviceTypeId: serviceType.id },

@@ -46,25 +46,49 @@ export async function GET(request, { params }) {
       console.log("fetched type", serviceType, searchText)
       if (serviceType) {
         // Fetch products by service type ID
+        // const products = await db.product.findMany({
+        //   where: { serviceTypeId: serviceType.id },
+        //   include: {
+        //     category: true,
+        //     bids: {
+        //       where: {
+        //         expiresAt: {
+        //           gte: new Date(), // Only include bids where `expiresAt` is greater than or equal to the current date
+        //         },
+        //       },
+        //     },
+        //     serviceType: true,
+        //     barters: {
+        //       select: {
+        //         prductExchange: true,  // Select only the productExchange field
+        //       }
+        //     }
+        //   }
+        // });
         const products = await db.product.findMany({
-          where: { serviceTypeId: serviceType.id },
-          include: {
-            category: true,
+          where: {
+            serviceTypeId: serviceType.id,
             bids: {
-              where: {
+              some: {
                 expiresAt: {
-                  gte: new Date(), // Only include bids where `expiresAt` is greater than or equal to the current date
+                  gt: new Date(), // Only include bids that haven't expired
                 },
               },
             },
-            serviceType: true,
-            barters: {
-              select: {
-                prductExchange: true,  // Select only the productExchange field
-              }
-            }
-          }
+          },
+          include: {
+            category: true, // Include related category if the product is valid
+            serviceType: true, // Include related serviceType if the product is valid
+            bids: {
+              where: {
+                expiresAt: {
+                  gt: new Date(), // Only include non-expired bids in the response
+                },
+              },
+            },
+          },
         });
+        
 
         if (products.length === 0) {
           return NextResponse.json({ message: 'No products found for the given service type' }, { status: 404 });
