@@ -1,4 +1,5 @@
-import React from "react";
+"use client"
+import React, { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -11,6 +12,7 @@ import {
   Filler
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import { getData } from "@/lib/getData";
 
 ChartJS.register(
   CategoryScale,
@@ -24,6 +26,19 @@ ChartJS.register(
 );
 
 const LineChart = () => {
+  // const [orders, setOrders] = useState([]);
+
+  // useEffect(() => {
+  //   const fetchOrders = async () => {
+  //     const data = await getData("orders");
+  //     setOrders(data);
+      
+  //   };
+
+  //   fetchOrders();
+
+  // }, []);
+  // console.log(orders, "orders in line chart");
   const chartData = {
     labels: ["Mon", "Tues", "Wed", "Thurs", "Fri", "Sat", "Sun"],
     datasets: [

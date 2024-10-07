@@ -17,7 +17,7 @@ import generateInitials from '../../../lib/generateInitials';
 export default function UserAvatar({user={}}) {
   const role =user?.role
   const {name,image} = user;
-  const intials = generateInitials(name)
+  // const intials = generateInitials(name)
   const router = useRouter();
  async function handleLogOut(){
   await signOut();
@@ -37,7 +37,7 @@ export default function UserAvatar({user={}}) {
         />:(
           <div className='w-10 h-10 p-4 flex items-center justify-center rounded-full bg-slate-50
            dark:bg-slate-800 shadow-md border border-slate-600' >
-             {intials} 
+             {/* {intials}  */} User
              </div>
         )}
       </button>
