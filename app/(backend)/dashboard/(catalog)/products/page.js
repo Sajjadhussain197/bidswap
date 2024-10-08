@@ -20,9 +20,7 @@ export default async function Products() {
 
   const allProducts = await getData("products");
   // console.log(allProducts, "all products");
-
-  // Filter products by seller (if not Admin)
-  const sellerProducts = allProducts.filter((product) => product.userId=== id);
+   const sellerProducts = allProducts.filter((product) => product.userId=== id);
   console.log(sellerProducts, "seller products");
 
   return (

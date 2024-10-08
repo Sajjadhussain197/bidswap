@@ -1,8 +1,11 @@
 import React from 'react'
 import LargeCard from './LargeCard'
 
-export default function LargeCards() {
-    const orderStats = [{
+export default function LargeCards({
+    data
+}) {
+    const orderStats = [
+        {
         period : 'Todays Orders',
         sales: 180000,
         color: 'bg-green-600',
@@ -26,8 +29,8 @@ export default function LargeCards() {
   return (
     <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 sm:grid-cols-2 gap-3 py-6'>
     {
-        orderStats.map((item,i) => (
-            <LargeCard  key={i} data={item}/>
+        data.map((item,i) => (
+            <LargeCard key={i} data={item}/>
         ))
     }
       {/* Large Card */}

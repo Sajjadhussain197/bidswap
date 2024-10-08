@@ -2,7 +2,6 @@ import { Layers, ShoppingCart } from 'lucide-react';
 import React from 'react';
 
 export default function SmallCard({ data }) {
-  console.log("Received data in SmallCard:", data);
 
   if (!data) {
     console.error("Data is undefined in SmallCard component.");
