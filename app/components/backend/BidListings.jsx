@@ -142,13 +142,13 @@ const BidListings = ({ bid }) => {
                   <td className="text-right">{bid.time}</td>
                   <td className="text-right">{bid.status}</td>
                   <td className="text-right py-2">
-                    <button 
+                    {/* <button 
                     disabled={bid.status === "APPROVED"}
                       onClick={() => handleApprove(bid.id)}
                       className="bg-transparent border border-green-500 text-green-500 px-3 py-1 rounded-md mr-2 hover:bg-green-500 hover:text-white transition-colors duration-300"
                     >
                       {bid.status === "APPROVED" ? "APPROVED": "Approve"}
-                    </button>
+                    </button> */}
                     <button
                       onClick={() => handleReject(bid)}
                       className="bg-transparent border border-red-500 text-red-500 px-3 py-1 rounded-md hover:bg-red-500 hover:text-white transition-colors duration-300"
