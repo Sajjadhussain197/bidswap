@@ -1,4 +1,5 @@
-import { UploadDropzone } from "@/lib/uploadthing";
+// import { UploadDropzone } from "@/lib/uploadthing";
+import { UploadDropzone } from "@/lib/uploadThing";
 import { Pencil } from "lucide-react";
 import Image from "next/image";
 import React from "react";

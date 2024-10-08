@@ -1,42 +1,53 @@
+"use client";
+
 import { getData } from "@/lib/getData";
 import { Item } from "@radix-ui/react-dropdown-menu";
 import { CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-
-export default async function Page({ params: { id } }) {
-  const order = await getData(`orders/${id}`);
+export default function Page({ params: { id } }) {
+  const [order, setOrder] = useState(null);
   const router = useRouter();
+
+  useEffect(() => {
+    async function fetchOrder() {
+      const fetchedOrder = await getData(`orders/${id}`);
+      setOrder(fetchedOrder);
+    }
+    fetchOrder();
+  }, [id]);
 
   if (!order) {
     return <div>Order not found</div>;
   }
+
   const viewInvoice = () => {
-    console.log("cliecked")
-    router.push(`/dashboard/orders/${id}/invoice`)
-  }
+    console.log("clicked");
+    router.push(`/dashboard/orders/${id}/invoice`);
+  };
 
   const orderItems = Array.isArray(order?.orderItems) ? order.orderItems : [];
   const subTotal = orderItems
     .reduce((acc, item) => acc + item.saleprice * item.qty, 0)
     .toFixed(2);
   console.log(orderItems);
+
   return (
     <section className="py-12 dark:bg-slate-950 bg-slate-50 sm:py-16 lg:py-20">
       <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-5xl">
         <div className="max-w-2xl mx-auto">
           <div className="relative mt-6 overflow-hidden bg-white dark:bg-slate-700 rounded-lg shadow md:mt-10">
-          <div className="absolute top-4 right-4">
-  <Link
-    href={`/dashboard/orders/${id}/invoice`}
-    className="inline-flex items-center justify-center px-4 py-3 text-xs font-bold text-gray-900 transition-all duration-200 bg-gray-100 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 hover:bg-gray-200"
-  >
-    View invoice
-  </Link>
-</div>
+            <div className="absolute top-4 right-4">
+              <Link
+                href={`/dashboard/orders/${id}/invoice`}
+                className="inline-flex items-center justify-center px-4 py-3 text-xs font-bold text-gray-900 transition-all duration-200 bg-gray-100 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 hover:bg-gray-200"
+              >
+                View invoice
+              </Link>
+            </div>
 
             <div className="px-4 py-6 sm:px-8 sm:py-10">
               <div className="-my-8 divide-y divide-gray-200">
