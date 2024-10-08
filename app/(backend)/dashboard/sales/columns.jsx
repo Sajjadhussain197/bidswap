@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import DateColumn from "@/app/components/DataTableColumns/DateColumn";
 import SortableColumn from "@/app/components/DataTableColumns/SortableColumn";
 import ActionColumn from "@/app/components/DataTableColumns/ActionColumn";
+import ImageColumn from "@/app/components/DataTableColumns/ImageColumn";
 
 
 export const columns = [
