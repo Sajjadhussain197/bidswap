@@ -1,6 +1,7 @@
 // pages/api/check-expiring-bids.js
+import db from '@/lib/db';
 import nodemailer from 'nodemailer';
-import { db } from '../../your-database-config'; // Adjust the path to your DB config
+// import { db } from '../../your-database-config'; // Adjust the path to your DB config
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
