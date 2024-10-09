@@ -106,7 +106,7 @@ export default async function Home({ searchParams }) {
       
     const queryParams = new URLSearchParams({ minprice, maxprice }).toString();
     console.log(queryParams, "slug of query")
-    const categoryData = await getData(`products/product/?${queryParams}`);
+    const categoryData = await getData(`products/?${queryParams}`);
     console.log(categoryData,"prices")
     if(categoryData){
 
@@ -115,7 +115,7 @@ export default async function Home({ searchParams }) {
     // categories = categoryData ? [categoryData] : [];
     }
   else {
-    categories = await getData("categories");
+    categories = await getData("categories/products");
     // console.log(categories)
     // if(categories){
     //   console.log(categories, "categories with products, simple")

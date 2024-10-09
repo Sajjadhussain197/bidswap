@@ -7,19 +7,20 @@ import { ObjectId } from 'mongodb'; // Import ObjectId for validation
 export async function GET(request, { params }) {
   const { id } = params; // Extract the product ID from params (if applicable)
   const url = new URL(request.url);
-  console.log(url, "url from get product")
+  // console.log(url, "url from get product")
   const serviceTypeQuery = url.searchParams.get('serviceType'); // Extract serviceType query parameter
-  console.log(serviceTypeQuery, "service type from product")
+  // console.log(serviceTypeQuery, "service type from product")
   const searchText = url.searchParams.get('query'); // Extract open search text (e.g., 'chairs', 'fancy chair')
-  console.log(searchText, "search text type from product")
+  // console.log(searchText, "search text type from product")
   const minprice = url.searchParams.get('minprice'); // Extract open search text (e.g., 'chairs', 'fancy chair')
   const maxprice = url.searchParams.get('maxprice'); // Extract open search text (e.g., 'chairs', 'fancy chair')
-  console.log(minprice, "min", maxprice, "max")
+  // console.log(minprice, "min", maxprice, "max")
 
   try {
     // Check if `id` is provided and if it's a valid ObjectId
     if (id && ObjectId.isValid(id)) {
       // Fetch a specific product by ID
+      console.log("id is here", id)
       const product = await db.product.findUnique({
         where: { id },
         include: {
@@ -28,6 +29,7 @@ export async function GET(request, { params }) {
           serviceType: true, // Include service type details
         }
       });
+      console.log("lo",product)
 
       if (!product) {
         return NextResponse.json({ message: 'Product not found' }, { status: 404 });

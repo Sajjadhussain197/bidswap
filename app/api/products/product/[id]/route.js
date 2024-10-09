@@ -4,11 +4,11 @@ import { ObjectId } from 'mongodb'; // Import ObjectId for validation
 
 export async function GET(request, { params }) {
   const { id } = params; // Extract the product ID from params (if applicable)
-  console.log(id, "backend product id")
+  // console.log(id, "backend product id")
   const url = new URL(request.url);
-  console.log(url,"url from get product")
+  // console.log(url,"url from get product")
   const serviceTypeQuery = url.searchParams.get('serviceType'); // Extract serviceType query parameter
-  console.log(serviceTypeQuery,"service type from product")
+  // console.log(serviceTypeQuery,"service type from product")
   const searchText = url.searchParams.get('query'); // Extract open search text (e.g., 'chairs', 'fancy chair')
 
   try {
@@ -18,7 +18,6 @@ export async function GET(request, { params }) {
       const product = await db.product.findUnique({
         where: { id },
         include: {
-          category: true, // Include category details
           bids: true,     // Include bid details if they exist
           serviceType: true, // Include service type details
         }

@@ -247,12 +247,13 @@ function ShippingDetailsForm() {
               <div className="mb-4">
                 <label className="block text-gray-700 dark:text-white mb-2" htmlFor="accountNumber">JazzCash Account Number</label>
                 <input
-                  type="text"
+                  type="tel"
                   id="accountNumber"
                   value={jazzCashDetails.accountNumber}
                   onChange={(e) => setJazzCashDetails({ ...jazzCashDetails, accountNumber: e.target.value })}
                   className="w-full p-3 border rounded"
                   required
+                  pattern="[+]*([0-9]{1,3})\s*([0-9]{4})\s*([0-9]{7})|[0-9]{10,11}"
                 />
               </div>
               <div className="mb-4">
@@ -269,7 +270,7 @@ function ShippingDetailsForm() {
               <button type="button" onClick={payWithJazzCash} className="bg-green-500 h-12 px-5 rounded-md w-25">
                 Pay with JazzCash
               </button>
-              {paymentStatus && <p className='text-green-500'>{paymentStatus}</p>}
+              {/* {paymentStatus && <p className='text-green-500'>{paymentStatus}</p>} */}
             </div>
 
           )}

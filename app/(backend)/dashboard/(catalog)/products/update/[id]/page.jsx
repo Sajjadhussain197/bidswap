@@ -4,7 +4,7 @@ import { getData } from '@/lib/getData'
 import React from 'react'
 
 export default async function UpdateProduct({params:{id}}) {
-  const product = await getData(`products/${id}`);
+  const product = await getData(`products/product/${id}`);
   console.log(product);
   return (
     <div>

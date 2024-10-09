@@ -41,11 +41,13 @@ export async function GET(request) {
   
   console.log("in main route")
     try {
-     const category = await db.category.findMany({
-      include:{
-        products:true
-      }
-     });
+    const category = await db.category.findMany();
+    //  const category = await db.category.findMany({
+    //   include:{
+    //     products:true
+    //   }
+    //  });
+     
      return NextResponse.json(category);
      
      
