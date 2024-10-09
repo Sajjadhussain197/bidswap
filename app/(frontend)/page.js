@@ -11,7 +11,7 @@ function transformData(data) {
     const { category, ...productDetails } = product;
 
     // Check if the category already exists in the result array
-    let categoryIndex = result.findIndex(c => c.id === category.id);
+    let categoryIndex = result.findIndex(c => c.id === category?.id);
 
     if (categoryIndex === -1) {
       // If category doesn't exist, add it with an empty products array
@@ -63,13 +63,13 @@ export default async function Home({ searchParams }) {
             // Create a new category entry
             categoryMap[categoryId] = {
               id: categoryId,
-              name: product.category.name,
+              name: product.category?.name,
               salePrice: product.saleprice,
-              description: product.category.description,
-              image: product.category.image,
-              slug: product.category.slug,
-              createdAt: product.category.createdAt,
-              updatedAt: product.category.updatedAt,
+              description: product.category?.description,
+              image: product.category?.image,
+              slug: product.category?.slug,
+              createdAt: product.category?.createdAt,
+              updatedAt: product.category?.updatedAt,
               expiresAt: null, // Initialize with null
               serviceType: product.serviceType ? product.serviceType.name : null,
               products: [],
@@ -106,7 +106,7 @@ export default async function Home({ searchParams }) {
       
     const queryParams = new URLSearchParams({ minprice, maxprice }).toString();
     console.log(queryParams, "slug of query")
-    const categoryData = await getData(`products/?${queryParams}`);
+    const categoryData = await getData(`products/product/?${queryParams}`);
     console.log(categoryData,"prices")
     if(categoryData){
 

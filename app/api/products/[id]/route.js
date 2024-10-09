@@ -134,7 +134,7 @@ export async function GET(request, { params }) {
       // Convert prices to numbers for comparison
       const parsedMinPrice = minprice ? parseFloat(minprice) : 0;
       const parsedMaxPrice = maxprice ? parseFloat(maxprice) : Infinity;
-
+      console.log("rangess are here")
       // Fetch products within the price range
       const products = await db.product.findMany({
         where: {

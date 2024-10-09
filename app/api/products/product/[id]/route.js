@@ -111,7 +111,35 @@ export async function GET(request, { params }) {
 
       return NextResponse.json(products);
 
-    } else {
+    } else if (minprice || maxprice) {
+      // Convert prices to numbers for comparison
+      const parsedMinPrice = minprice ? parseFloat(minprice) : 0;
+      const parsedMaxPrice = maxprice ? parseFloat(maxprice) : Infinity;
+      console.log("rangess are here")
+      // Fetch products within the price range
+      const products = await db.product.findMany({
+        where: {
+          saleprice: {
+            gte: parsedMinPrice,
+            lte: parsedMaxPrice,
+          }
+        },
+        include: {
+          category: true,
+          bids: true,
+          serviceType: true
+        }
+      });
+
+      if (products.length === 0) {
+        return NextResponse.json({ message: 'No products found within the price range' }, { status: 404 });
+      }
+
+      return NextResponse.json(products);
+
+      // Search by serviceType
+    }
+    else {
       // Fetch all products if no query is provided
       const products = await db.product.findMany({
         include: {
